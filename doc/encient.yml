@@ -1,0 +1,1906 @@
+#openapi: 3.0.3
+#info:
+#  version: "latest"
+#  title: Example - API
+#  description: |
+#    XYXYXY
+#security:
+#  - BearerAuth: []
+#
+#paths:
+#  ## Health resources
+#  "/ping":
+#    get:
+#      tags:
+#        - Health
+#      summary: ping.
+#      operationId: ping
+#      responses:
+#        "200":
+#          description: pong.
+#          content:
+#            text/plain:
+#              schema:
+#                type: string
+#                example: pong
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  ## Security resources
+#  "/signin":
+#    post:
+#      tags:
+#        - Security
+#      summary: Login user.
+#      operationId: signIn
+#      requestBody:
+#        description: Login payload. set 'user_id' to null when authenticating with email and password
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/AuthenticationPayload"
+#      responses:
+#        "201":
+#          description: Logged in payload.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Whoami"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  "/signup":
+#    post:
+#      tags:
+#        - Security
+#      summary: Sign up user
+#      operationId: signUp
+#      requestBody:
+#        description: Sign up payload.
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/SignUp"
+#      responses:
+#        "201":
+#          description: Signed up user.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Whoami"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  "/whoami":
+#    get:
+#      tags:
+#        - Security
+#      summary: Tells you who you are.
+#      operationId: whoami
+#      responses:
+#        "200":
+#          description: Who you are.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Whoami"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  ## Chating resources
+#  "/users/{id}/chat":
+#    get:
+#      tags:
+#        - Chatbot
+#      summary: Obtain information from the chatbot.
+#      operationId: getChatbotInformation
+#      parameters:
+#        - name: id
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: prompt
+#          in: query
+#          required: true
+#          description: The question to ask the chatbot about.
+#          schema:
+#            type: string
+#      responses:
+#        "200":
+#          description: The response given by the chatbot.
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/ChatResponse"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  ## Users resources
+#  "/users":
+#    get:
+#      tags:
+#        - User
+#      summary: Get all users.
+#      operationId: getUsers
+#      parameters:
+#        - name: page
+#          in: query
+#          required: true
+#          schema:
+#            $ref: "#/components/schemas/Page"
+#        - name: page_size
+#          in: query
+#          required: true
+#          schema:
+#            $ref: "#/components/schemas/PageSize"
+#        - name: name
+#          in: query
+#          required: false
+#          description: Filter user by first name or lastname or username.
+#          schema:
+#            type: string
+#      responses:
+#        "200":
+#          description: List of users that meet the criterias.
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/User"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  "/users/{id}":
+#    get:
+#      tags:
+#        - User
+#      summary: Get user by identifier.
+#      parameters:
+#        - name: id
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      operationId: getUserById
+#      responses:
+#        "200":
+#          description: The identified user.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/User"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#    put:
+#      tags:
+#        - User
+#      summary: Crupdate user by identifier.
+#      operationId: crupdateUserById
+#      parameters:
+#        - name: id
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      requestBody:
+#        description: User to crupdate.
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/User"
+#      responses:
+#        "201":
+#          description: The crupdated user.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/User"
+#
+#  "/users/{uid}/pictures":
+#    put:
+#      tags:
+#        - User
+#      summary: Submit user picture of the type profile banner or profile picture
+#      operationId: putUserPicture
+#      parameters:
+#        - name: uid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: type
+#          in: query
+#          required: true
+#          schema:
+#            $ref: "#/components/schemas/UserPictureType"
+#      requestBody:
+#        required: true
+#        content:
+#          application/octet-stream:
+#            schema:
+#              type: string
+#              format: binary
+#      responses:
+#        '200':
+#          description: User picture added.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/UserPicture'
+#        '400':
+#          $ref: '#/components/responses/400'
+#        '403':
+#          $ref: '#/components/responses/403'
+#        '404':
+#          $ref: '#/components/responses/404'
+#        '429':
+#          $ref: '#/components/responses/429'
+#        '500':
+#          $ref: '#/components/responses/500'
+#
+#    get:
+#      tags:
+#        - User
+#      summary: Get user picture of the type profile banner or profile picture
+#      operationId: getUserPicture
+#      parameters:
+#        - name: uid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: type
+#          in: query
+#          required: true
+#          schema:
+#            $ref: "#/components/schemas/UserPictureType"
+#
+#      responses:
+#        '200':
+#          description: User picture fetched.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/UserPicture'
+#        '400':
+#          $ref: '#/components/responses/400'
+#        '403':
+#          $ref: '#/components/responses/403'
+#        '404':
+#          $ref: '#/components/responses/404'
+#        '429':
+#          $ref: '#/components/responses/429'
+#        '500':
+#          $ref: '#/components/responses/500'
+#
+#  ## Courseing resources
+#  "/courses":
+#    get:
+#      tags:
+#        - Courseing
+#      summary: Get all courses.
+#      operationId: getCourses
+#      parameters:
+#        - name: page
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/Page"
+#        - name: page_size
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/PageSize"
+#        - name: isSuggest
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#      responses:
+#        "200":
+#          description: List of courses that meet the criteria.
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/Course"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  "/courses/{pid}":
+#    get:
+#      tags:
+#        - Courseing
+#      summary: Get course by identifier.
+#      operationId: getCourseById
+#      parameters:
+#        - name: pid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      responses:
+#        "200":
+#          description: The identified course.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Course"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#    put:
+#      tags:
+#        - Courseing
+#      summary: Crupdate course by identifier.
+#      operationId: crupdateCourseById
+#      parameters:
+#        - name: pid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      requestBody:
+#        description: Course to crupdate
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/Course"
+#      responses:
+#        "201":
+#          description: The crupdated course.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Course"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#    delete:
+#      tags:
+#        - Courseing
+#      summary: Delete course by identifier.
+#      operationId: deleteCourseById
+#      parameters:
+#        - name: pid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      responses:
+#        "200":
+#          description: The deleted course.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Course"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  "/users/{uid}/courses/{xid}/react":
+#    put:
+#      tags:
+#        - Courseing
+#      summary: Reacte an courses.
+#      operationId: crupdateReactionCourses
+#      parameters:
+#        - name: uid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: xid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: isSuggest
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#      requestBody:
+#        description: Reaction to crupdate
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/Reaction"
+#      responses:
+#        "200":
+#          description: List of courses that meet the criteria.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Reaction"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  "/courses/{xid}/react":
+#    get:
+#      tags:
+#        - Courseing
+#      summary: Get all ReactionCourses.
+#      operationId: getReactionCourses
+#      parameters:
+#        - name: xid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: uid
+#          in: query
+#          required: false
+#          schema:
+#            type: string
+#        - name: have_like_reaction
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: have_vision
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: have_stars_number
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: have_comment
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: page
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/Page"
+#        - name: page_size
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/PageSize"
+#      responses:
+#        "200":
+#          description: List of courses that meet the criteria.
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/Reaction"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#
+#
+#  ## Signalisationing resources
+#  "/signalisations":
+#    get:
+#      tags:
+#        - Signalisationing
+#      summary: Get all signalisations.
+#      operationId: getSignalisations
+#      parameters:
+#        - name: page
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/Page"
+#        - name: page_size
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/PageSize"
+#        - name: isSuggest
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#      responses:
+#        "200":
+#          description: List of signalisations that meet the criteria.
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/Signalisation"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  "/signalisations/{pid}":
+#    get:
+#      tags:
+#        - Signalisationing
+#      summary: Get signalisation by identifier.
+#      operationId: getSignalisationById
+#      parameters:
+#        - name: pid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      responses:
+#        "200":
+#          description: The identified signalisation.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Signalisation"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#    put:
+#      tags:
+#        - Signalisationing
+#      summary: Crupdate signalisation by identifier.
+#      operationId: crupdateSignalisationById
+#      parameters:
+#        - name: pid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      requestBody:
+#        description: Signalisation to crupdate
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/Signalisation"
+#      responses:
+#        "201":
+#          description: The crupdated signalisation.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Signalisation"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#    delete:
+#      tags:
+#        - Signalisationing
+#      summary: Delete signalisation by identifier.
+#      operationId: deleteSignalisationById
+#      parameters:
+#        - name: pid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      responses:
+#        "200":
+#          description: The deleted signalisation.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Signalisation"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  "/users/{uid}/signalisations/{xid}/react":
+#    put:
+#      tags:
+#        - Signalisationing
+#      summary: Reacte an signalisations.
+#      operationId: crupdateReactionSignalisations
+#      parameters:
+#        - name: uid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: xid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: isSuggest
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#      requestBody:
+#        description: Reaction to crupdate
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/Reaction"
+#      responses:
+#        "200":
+#          description: List of signalisations that meet the criteria.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Reaction"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  "/signalisations/{xid}/react":
+#    get:
+#      tags:
+#        - Signalisationing
+#      summary: Get all ReactionSignalisations.
+#      operationId: getReactionSignalisations
+#      parameters:
+#        - name: xid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: uid
+#          in: query
+#          required: false
+#          schema:
+#            type: string
+#        - name: have_like_reaction
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: have_vision
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: have_stars_number
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: have_comment
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: page
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/Page"
+#        - name: page_size
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/PageSize"
+#      responses:
+#        "200":
+#          description: List of signalisations that meet the criteria.
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/Reaction"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#
+#
+#  ## Notificationing resources
+#  "/notifications":
+#    get:
+#      tags:
+#        - Notificationing
+#      summary: Get all notifications.
+#      operationId: getNotifications
+#      parameters:
+#        - name: page
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/Page"
+#        - name: page_size
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/PageSize"
+#        - name: isSuggest
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#      responses:
+#        "200":
+#          description: List of notifications that meet the criteria.
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/Notification"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  "/notifications/{pid}":
+#    get:
+#      tags:
+#        - Notificationing
+#      summary: Get notification by identifier.
+#      operationId: getNotificationById
+#      parameters:
+#        - name: pid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      responses:
+#        "200":
+#          description: The identified notification.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Notification"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#    put:
+#      tags:
+#        - Notificationing
+#      summary: Crupdate notification by identifier.
+#      operationId: crupdatnotificationeById
+#      parameters:
+#        - name: pid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      requestBody:
+#        description: Notification to crupdate
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/Notification"
+#      responses:
+#        "201":
+#          description: The crupdated notification.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Notification"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#    delete:
+#      tags:
+#        - Notificationing
+#      summary: Delete notification by identifier.
+#      operationId: deletnotificationeById
+#      parameters:
+#        - name: pid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      responses:
+#        "200":
+#          description: The deleted notification.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Notification"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  "/users/{uid}/notifications/{xid}/react":
+#    put:
+#      tags:
+#        - Notificationing
+#      summary: Reacte an notifications.
+#      operationId: crupdateReactionNotifications
+#      parameters:
+#        - name: uid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: xid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: isSuggest
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#      requestBody:
+#        description: Reaction to crupdate
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/Reaction"
+#      responses:
+#        "200":
+#          description: List of notifications that meet the criteria.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Reaction"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  "/notifications/{xid}/react":
+#    get:
+#      tags:
+#        - Notificationing
+#      summary: Get all ReactionNotifications.
+#      operationId: getReactionNotifications
+#      parameters:
+#        - name: xid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: uid
+#          in: query
+#          required: false
+#          schema:
+#            type: string
+#        - name: have_like_reaction
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: have_vision
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: have_stars_number
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: have_comment
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: page
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/Page"
+#        - name: page_size
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/PageSize"
+#      responses:
+#        "200":
+#          description: List of notifications that meet the criteria.
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/Reaction"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#
+#  ## CourseSessioning resources
+#  "/course-sessions":
+#    get:
+#      tags:
+#        - CourseSessioning
+#      summary: Get all courseSessions.
+#      operationId: getCourseSessions
+#      parameters:
+#        - name: page
+#          in: query
+#          required: true
+#          schema:
+#            $ref: "#/components/schemas/Page"
+#        - name: page_size
+#          in: query
+#          required: true
+#          schema:
+#            $ref: "#/components/schemas/PageSize"
+#        - name: categories
+#          in: query
+#          required: false
+#          description: courseSession
+#          schema:
+#            type: string
+#        - name: isSuggest
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#      responses:
+#        "200":
+#          description: List of courseSessions that meet the criteria.
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/CourseSession"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  "/course-sessions/{pid}":
+#    get:
+#      tags:
+#        - CourseSessioning
+#      summary: Get courseSession by identifier.
+#      operationId: getCourseSessionById
+#      parameters:
+#        - name: pid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      responses:
+#        "200":
+#          description: The identified courseSession.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/CourseSession"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#    put:
+#      tags:
+#        - CourseSessioning
+#      summary: Crupdate courseSession by identifier.
+#      operationId: crupdateCourseSessionById
+#      parameters:
+#        - name: pid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      requestBody:
+#        description: CourseSession to crupdate
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/CourseSession"
+#      responses:
+#        "201":
+#          description: The crupdated courseSession.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/CourseSession"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#    delete:
+#      tags:
+#        - CourseSessioning
+#      summary: Delete courseSession by identifier.
+#      operationId: deleteCourseSessionById
+#      parameters:
+#        - name: pid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      responses:
+#        "200":
+#          description: The deleted courseSession.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/CourseSession"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#
+#  "/Users/{id}/courseSession/{courseSession_id}/pdf":
+#    get:
+#      tags:
+#        - CourseSessioning
+#      summary: Get pdf of a specific courseSession.
+#      operationId: getCourseSessionPdf
+#      parameters:
+#        - name: id
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: courseSession_id
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      responses:
+#        '200':
+#          description: CourseSession Pdf
+#          content:
+#            application/pdf:
+#              schema:
+#                type: string
+#                format: binary
+#                example: PDF VERSION
+#
+#        '400':
+#          $ref: '#/components/responses/400'
+#        '403':
+#          $ref: '#/components/responses/403'
+#        '404':
+#          $ref: '#/components/responses/404'
+#        '429':
+#          $ref: '#/components/responses/429'
+#        '500':
+#          $ref: '#/components/responses/500'
+#
+#  "/users/{uid}/course-sessions/{xid}/react":
+#    put:
+#      tags:
+#        - CourseSessioning
+#      summary: Reacte an courseSessions.
+#      operationId: crupdateReactionCourseSessions
+#      parameters:
+#        - name: uid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: xid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: isSuggest
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#      requestBody:
+#        description: Reaction to crupdate
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/Reaction"
+#      responses:
+#        "200":
+#          description: List of courseSessions that meet the criteria.
+#          content:
+#            apeyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0K3Zhbm9AaGVpLnNjaG9vbCIsImlhdCI6MTcyMjg5NTY3MCwiZXhwIjoxNzIzNDk1NjcwfQ.va9FHIb7juP5Qzg9PfvxHc4cvvEWKsmDQN9QexBT30Mplication/json:
+#              schema:
+#                $ref: "#/components/schemas/Reaction"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#  "/course-sessions/{xid}/react":
+#    get:
+#      tags:
+#        - CourseSessioning
+#      summary: Get all ReactionCourseSessions.
+#      operationId: getReactionCourseSessions
+#      parameters:
+#        - name: xid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: uid
+#          in: query
+#          required: false
+#          schema:
+#            type: string
+#        - name: have_like_reaction
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: have_vision
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: have_stars_number
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: have_comment
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: page
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/Page"
+#        - name: page_size
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/PageSize"
+#      responses:
+#        "200":
+#          description: List of courseSessions that meet the criteria.
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/Reaction"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  ## Locationing resources
+#  "/locations":
+#    get:
+#      tags:
+#        - Locationing
+#      summary: Get all locations.
+#      operationId: getLocations
+#      parameters:
+#        - name: page
+#          in: query
+#          required: true
+#          schema:
+#            $ref: "#/components/schemas/Page"
+#        - name: page_size
+#          in: query
+#          required: true
+#          schema:
+#            $ref: "#/components/schemas/PageSize"
+#        - name: isSuggest
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#      responses:
+#        "200":
+#          description: List of locations that meet the criteria.
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/Location"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  "/locations/{pid}":
+#    get:
+#      tags:
+#        - Locationing
+#      summary: Get location by identifier.
+#      operationId: getLocationById
+#      parameters:
+#        - name: pid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      responses:
+#        "200":
+#          description: The identified location.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Location"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#    put:
+#      tags:
+#        - Locationing
+#      summary: Crupdate location by identifier.
+#      operationId: crupdateLocationById
+#      parameters:
+#        - name: pid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      requestBody:
+#        description: Location to crupdate
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/Location"
+#      responses:
+#        "201":
+#          description: The crupdated location.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Location"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#    delete:
+#      tags:
+#        - Locationing
+#      summary: Delete location by identifier.
+#      operationId: deleteLocationById
+#      parameters:
+#        - name: pid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#      responses:
+#        "200":
+#          description: The deleted location.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Location"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#  "/users/{uid}/locations/{xid}/react":
+#    put:
+#      tags:
+#        - Locationing
+#      summary: Reacte an locations.
+#      operationId: crupdateReactionLocations
+#      parameters:
+#        - name: uid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: xid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: isSuggest
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#      requestBody:
+#        description: Reaction to crupdate
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/Reaction"
+#      responses:
+#        "200":
+#          description: List of locations that meet the criteria.
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Reaction"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#  "/locations/{xid}/react":
+#    get:
+#      tags:
+#        - Locationing
+#      summary: Get all ReactionLocations.
+#      operationId: getReactionLocations
+#      parameters:
+#        - name: xid
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#        - name: uid
+#          in: query
+#          required: false
+#          schema:
+#            type: string
+#        - name: have_like_reaction
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: have_vision
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: have_stars_number
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: have_comment
+#          in: query
+#          required: false
+#          schema:
+#            type: boolean
+#        - name: page
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/Page"
+#        - name: page_size
+#          in: query
+#          required: false
+#          schema:
+#            $ref: "#/components/schemas/PageSize"
+#      responses:
+#        "200":
+#          description: List of locations that meet the criteria.
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/Reaction"
+#        "400":
+#          $ref: "#/components/responses/400"
+#        "403":
+#          $ref: "#/components/responses/403"
+#        "404":
+#          $ref: "#/components/responses/404"
+#        "429":
+#          $ref: "#/components/responses/429"
+#        "500":
+#          $ref: "#/components/responses/500"
+#
+#components:
+#  securitySchemes:
+#    BearerAuth:
+#      type: http
+#      scheme: bearer
+#
+#  responses:
+#    ## response model
+#    "400":
+#      description: Bad request
+#      content:
+#        application/json:
+#          schema:
+#            $ref: "#/components/schemas/BadRequestException"
+#    "403":
+#      description: Forbidden
+#      content:
+#        application/json:
+#          schema:
+#            $ref: "#/components/schemas/NotAuthorizedException"
+#    "404":
+#      description: Not found
+#      content:
+#        application/json:
+#          schema:
+#            $ref: "#/components/schemas/ResourceNotFoundException"
+#    "429":
+#      description: Too many requests to the API
+#      content:
+#        application/json:
+#          schema:
+#            $ref: "#/components/schemas/TooManyRequestsException"
+#    "500":
+#      description: Internal server error
+#      content:
+#        application/json:
+#          schema:
+#            $ref: "#/components/schemas/InternalServerException"
+#
+#  schemas:
+#    ## enum type
+#    Page:
+#      type: integer
+#      description: Start at `1`
+#    PageSize:
+#      type: integer
+#      description: Cannot exceed `500`
+#    Role:
+#      type: string
+#      enum:
+#        - CLIENT
+#        - MANAGER
+#    Sex:
+#      type: string
+#      enum:
+#        - M
+#        - F
+#        - OTHER
+#    ReactionType:
+#      type: string
+#      enum:
+#        - LIKE
+#        - DISLIKE
+#    UserStatus:
+#      type: string
+#      enum:
+#        - ENABLED
+#        - BANISHED
+#
+#        ## resource model
+#
+#    Course:
+#      properties:
+#        id:
+#          type: string
+#        creation_datetime:
+#          type: string
+#          format: date-time
+#        updated_at:
+#          type: string
+#          format: date-time
+#        user:
+#          $ref: "#/components/schemas/User"
+#
+#
+#    Signalisation:
+#      properties:
+#        id:
+#          type: string
+#        creation_datetime:
+#          type: string
+#          format: date-time
+#        updated_at:
+#          type: string
+#          format: date-time
+#        user:
+#          $ref: "#/components/schemas/User"
+#
+#    Notification:
+#      properties:
+#        id:
+#          type: string
+#        creation_datetime:
+#          type: string
+#          format: date-time
+#        updated_at:
+#          type: string
+#          format: date-time
+#        user:
+#          $ref: "#/components/schemas/User"
+#
+#    CourseSession:
+#      properties:
+#        id:
+#          type: string
+#        creation_datetime:
+#          type: string
+#          format: date-time
+#        updated_at:
+#          type: string
+#          format: date-time
+#        course:
+#          $ref: "#/components/schemas/Course"
+#        location:
+#          $ref: "#/components/schemas/Location"
+#
+#    Location:
+#      properties:
+#        id:
+#          type: string
+#        creation_datetime:
+#          type: string
+#          format: date-time
+#        updated_at:
+#          type: string
+#          format: date-time
+#
+#    ChatResponse:
+#      properties:
+#        creation_datetime:
+#          type: string
+#          format: date-time
+#        response:
+#          type: string
+#
+#    Reaction:
+#      properties:
+#        id:
+#          type: string
+#        likeReaction:
+#          $ref: "#/components/schemas/ReactionType"
+#        creation_datetime:
+#          type: string
+#          format: date-time
+#        last_update_datetime:
+#          type: string
+#          format: date-time
+#        user_id:
+#          type: string
+#        subject_id:
+#          type: string
+#        vision:
+#          type: boolean
+#        StarsNumber:
+#          type: integer
+#        comment:
+#          type: string
+#    CreateUser:
+#      properties:
+#        id:
+#          type: string
+#        last_name:
+#          type: string
+#        first_name:
+#          type: string
+#        birth_date:
+#          type: string
+#          format: date
+#        email:
+#          type: string
+#        username:
+#          type: string
+#        status:
+#          $ref: "#/components/schemas/UserStatus"
+#        sex:
+#          $ref: "#/components/schemas/Sex"
+#        role:
+#          $ref: "#/components/schemas/Role"
+#    User:
+#      allOf:
+#        - $ref: "#/components/schemas/CreateUser"
+#      properties:
+#        photo_url:
+#          type: string
+#        profile_banner_url:
+#          type: string
+#        entrance_datetime:
+#          type: string
+#          format: date-time
+#    UserPicture:
+#      properties:
+#        user_id:
+#          type: string
+#        type:
+#          $ref: "#/components/schemas/UserPictureType"
+#        url:
+#          type: string
+#    UserPictureType:
+#      type: string
+#      enum:
+#        - BANNER
+#        - PROFILE
+#    AuthenticationPayload:
+#      properties:
+#        email:
+#          type: string
+#        password:
+#          type: string
+#    SignUp:
+#      allOf:
+#        - $ref: "#/components/schemas/CreateUser"
+#        - $ref: "#/components/schemas/AuthenticationPayload"
+#      properties:
+#        password:
+#          type: string
+#    Whoami:
+#      properties:
+#        user:
+#          $ref: "#/components/schemas/User"
+#        bearer:
+#          type: string
+#
+#    ## exception model
+#    Exception:
+#      type: object
+#      properties:
+#        type:
+#          type: string
+#        message:
+#          type: string
+#    BadRequestException:
+#      allOf:
+#        - $ref: "#/components/schemas/Exception"
+#      example:
+#        type: BadRequestException
+#        message: Bad request
+#    NotAuthorizedException:
+#      allOf:
+#        - $ref: "#/components/schemas/Exception"
+#      example:
+#        type: NotAuthorizedException
+#        message: Not authorized
+#    ResourceNotFoundException:
+#      allOf:
+#        - $ref: "#/components/schemas/Exception"
+#      example:
+#        type: ResourceNotFoundException
+#        message: Resource of type <T> identified by <I> not found
+#    TooManyRequestsException:
+#      allOf:
+#        - $ref: "#/components/schemas/Exception"
+#      example:
+#        type: TooManyRequestsException
+#        message: Too many requests
+#    InternalServerException:
+#      allOf:
+#        - $ref: "#/components/schemas/Exception"
+#      example:
+#        type: InternalServerException
+#        message: Unexpected error

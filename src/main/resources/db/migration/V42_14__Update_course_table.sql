@@ -1,0 +1,2 @@
+ALTER TABLE course ADD COLUMN IF NOT EXISTS picture_is_implemented BOOLEAN DEFAULT false;
+ALTER TABLE course ADD COLUMN IF NOT EXISTS image_key VARCHAR(255);
