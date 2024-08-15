@@ -99,6 +99,10 @@ jobs:
           echo "::add-mask::$JWT_EXPIRATION"
           echo "::add-mask::$SPRING_FLYWAY_LOCATIONS"
           echo "::add-mask::$AWS_S3_BUCKET"
+          echo "::add-mask::$OPENAI_API_KEY"
+          echo "::add-mask::$aws_eventBridge_bus"
+          echo "::add-mask::$aws_ses_source"
+          echo "::add-mask::$aws_sqs_queue_url"
           echo "JWT_SECRET=$JWT_SECRET" >> $GITHUB_ENV
           echo "SERVER_PORT=$SERVER_PORT" >> $GITHUB_ENV
           echo "SPRING_DATASOURCE_PASSWORD=$SPRING_DATASOURCE_PASSWORD" >> $GITHUB_ENV
@@ -123,13 +127,13 @@ jobs:
             Env3=${{env.SPRING_DATASOURCE_PASSWORD}},
             Env4=${{env.SPRING_DATASOURCE_URL}},
             Env5=${{env.SPRING_DATASOURCE_USERNAME}},
-              Env6=${{env.JWT_EXPIRATION}},
+            Env6=${{env.JWT_EXPIRATION}},
             Env7=${{env.SPRING_FLYWAY_LOCATIONS}},
             Env8=${{env.AWS_S3_BUCKET}},
-              Env9=${{env.OPENAI_API_KEY}},
-              Env10=${{env.aws_eventBridge_bus}},
-              Env11=${{env.aws_ses_source}},
-              Env12=${{env.aws_sqs_queue_url}}"
+            Env9=${{env.OPENAI_API_KEY}},
+            Env10=${{env.aws_eventBridge_bus}},
+            Env11=${{env.aws_ses_source}},
+            Env12=${{env.aws_sqs_queue_url}}"
 
       - name: Retrieve and display CloudFormation outputs
         run: |
