@@ -124,20 +124,24 @@ jobs:
           tags: ${{ env.TAGS }}
           capabilities: CAPABILITY_NAMED_IAM
           no-fail-on-empty-changeset: "1"
-          parameter-overrides:
-            "Env=${{ github.ref_name }},ProjectName=${{ env.PROJECT_NAME }},ProjectVersion=${{ env.PROJECT_VERSION }},BucketName=${{env.S3_BUCKET_NAME}}, RandomID=${{ env.RANDOM_ID }},
-            Env1=${{env.JWT_SECRET}},
-            Env2=${{env.SERVER_PORT}},
-            Env3=${{env.SPRING_DATASOURCE_PASSWORD}},
-            Env4=${{env.SPRING_DATASOURCE_URL}},
-            Env5=${{env.SPRING_DATASOURCE_USERNAME}},
-            Env6=${{env.JWT_EXPIRATION}},
-            Env7=${{env.SPRING_FLYWAY_LOCATIONS}},
-            Env8=${{env.AWS_S3_BUCKET}},
-            Env9=${{env.OPENAI_API_KEY}},
-            Env10=${{env.aws_eventBridge_bus}},
-            Env11=${{env.aws_ses_source}},
-            Env12=${{env.aws_sqs_queue_url}}"
+          parameter-overrides: |
+            Env=${{ github.ref_name }},
+            ProjectName=${{ env.PROJECT_NAME }},
+            ProjectVersion=${{ env.PROJECT_VERSION }},
+            BucketName=${{ env.S3_BUCKET_NAME }},
+            RandomID=${{ env.RANDOM_ID }},
+            Env1=${{ env.JWT_SECRET }},
+            Env2=${{ env.SERVER_PORT }},
+            Env3=${{ env.SPRING_DATASOURCE_PASSWORD }},
+            Env4=${{ env.SPRING_DATASOURCE_URL }},
+            Env5=${{ env.SPRING_DATASOURCE_USERNAME }},
+            Env6=${{ env.JWT_EXPIRATION }},
+            Env7=${{ env.SPRING_FLYWAY_LOCATIONS }},
+            Env8=${{ env.AWS_S3_BUCKET }},
+            Env9=${{ env.OPENAI_API_KEY }},
+            Env10=${{ env.aws_eventBridge_bus }},
+            Env11=${{ env.aws_ses_source }},
+            Env12=${{ env.aws_sqs_queue_url }}
 
       - name: Retrieve and display CloudFormation outputs
         run: |
