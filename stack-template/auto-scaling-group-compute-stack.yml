@@ -124,13 +124,13 @@ Resources:
             echo "export SPRING_DATASOURCE_PASSWORD=\"${Env3}\"" >> /etc/environment
             echo "export SPRING_DATASOURCE_URL=\"${Env4}\"" >> /etc/environment
             echo "export SPRING_DATASOURCE_USERNAME=\"${Env5}\"" >> /etc/environment
-          echo "export jwt_expiration=\"${Env6}\"" >> /etc/environment
+            echo "export jwt_expiration=\"${Env6}\"" >> /etc/environment
             echo "export SPRING_FLYWAY_LOCATIONS=\"${Env7}\"" >> /etc/environment
             echo "export AWS_S3_BUCKET=\"${Env8}\"" >> /etc/environment
-          echo "export OPENAI_API_KEY=\"${Env9}\"" >> /etc/environment
-          echo "export aws_eventBridge_bus=\"${Env10}\"" >> /etc/environment
-          echo "export aws_ses_source=\"${Env11}\"" >> /etc/environment
-          echo "export aws_sqs_queue_url=\"${Env12}\"" >> /etc/environment
+            echo "export OPENAI_API_KEY=\"${Env9}\"" >> /etc/environment
+            echo "export aws_eventBridge_bus=\"${Env10}\"" >> /etc/environment
+            echo "export aws_ses_source=\"${Env11}\"" >> /etc/environment
+            echo "export aws_sqs_queue_url=\"${Env12}\"" >> /etc/environment
             source /etc/environment
             cd /home/ec2-user
             source .bashrc
