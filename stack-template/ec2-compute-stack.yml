@@ -1,0 +1,104 @@
+#stack-template/ec2-compute-stack.uml
+AWSTemplateFormatVersion: 2010-09-09
+Description: Postgres Storage
+
+Parameters:
+  AvailabilityZone:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Default: eu-west-3a
+  ProjectName:
+    Type: String
+    Default: app-api
+  Env:
+    Type: String
+
+Mappings:
+  EnvironmentToInstanceType:
+    dev:
+      InstanceType: t2.micro
+    test:
+      InstanceType: t2.micro
+    prod:
+      InstanceType: t2.small
+
+Resources:
+  S3AndSsmAccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName:  !Join ["-", [!Ref ProjectName, Ec2S3AccessRole, !Ref Env]]
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: S3AndSsmAccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                  - ssm:GetParametersByPath
+                Resource:
+                  - !Sub arn:aws:s3:::{{resolve:ssm:/${ProjectName}/${Env}/s3/bucket-name}}/*
+                  - !Sub arn:aws:s3:::{{resolve:ssm:/${ProjectName}/${Env}/s3/bucket-name}}/*/*
+                  - arn:aws:ssm:*:*:parameter/${ProjectName}/${Env}/*
+                  - arn:aws:ssm:*:*:parameter/${ProjectName}/${Env}/*/*
+  Ec2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles: [!Ref S3AndSsmAccessRole]
+
+  PublicIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      InstanceId: !Ref Ec2Instance
+      Tags:
+        - Key: Name
+          Value: !Join ["-", [!Ref ProjectName, !Ref Env]]
+
+  Ec2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: !Ref AvailabilityZone
+      InstanceType: #t2.small
+        !FindInMap [
+          EnvironmentToInstanceType,
+          !Ref Env,
+          InstanceType,
+        ]
+      ImageId: ami-00983e8a26e4c9bd9
+      KeyName: !Sub '{{resolve:ssm:/${ProjectName}/${Env}/ec2/key-name}}'
+      SecurityGroupIds:
+        - !Sub '{{resolve:ssm:/${ProjectName}/${Env}/ec2/security-group-id}}'
+      IamInstanceProfile: !Ref Ec2InstanceProfile
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          apt-get update -y
+          apt-get upgrade -y
+          #apt-get install -y oracle-java17-installer oracle-java17-set-default
+          apt-get install -y openjdk-17-jdk openjdk-17-jre
+
+  SSMInstanceIdParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub '/${ProjectName}/${Env}/ec2/instance-id'
+      Type: String
+      Value: !Ref Ec2Instance
+
+Outputs:
+  InstanceId:
+    Description: The instance ID of the EC2 instance
+    Value: !Ref Ec2Instance
+  siteURL:
+    Value: !Sub http://${PublicIP}:8080
+    Description: App URL

@@ -1,0 +1,137 @@
+name: CD auto scaling group compute
+
+on:
+  workflow_call:
+
+  workflow_dispatch:
+
+jobs:
+  cd-compute:
+    runs-on: ubuntu-latest
+
+    env:
+      ENVIRONMENT: ${{ github.ref_name == 'prod' || 'dev'}}
+      CONFIG_FILE: stack-template/config.yml
+      AVAILABILITY_ZONE: eu-west-3a
+      STACK_TYPE: compute
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4.1.1
+
+      - name: Install yq
+        uses: Makepad-fr/setup-yq-action@main
+        with:
+          version: '4.6.0'
+
+      - name: Parse configuration file
+        id: parse_config
+        run: |
+          REGION=$(yq eval ".regions.${ENVIRONMENT}" $CONFIG_FILE)
+          APP_TAG=$(yq eval ".tags.app" $CONFIG_FILE)
+          USER_TAG=$(yq eval ".tags.user" $CONFIG_FILE)
+          DB_NAME=$(yq eval ".database.name" $CONFIG_FILE)
+          TAGS="[ { \"Key\": \"app\", \"Value\": \"$APP_TAG\" }, { \"Key\": \"env\", \"Value\": \"${{ github.ref_name }}\" }, { \"Key\": \"user\", \"Value\": \"$USER_TAG\" } ]"
+          echo "AWS_REGION=$REGION" >> $GITHUB_ENV
+          echo "TAGS=$TAGS" >> $GITHUB_ENV
+          echo "DB_NAME=$DB_NAME" >> $GITHUB_ENV
+
+      # Configuration for Production
+      - name: Configure AWS credentials (Production)
+        if: ${{ env.ENVIRONMENT == 'prod' }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Configuration for Development
+      - name: Configure AWS credentials (Preproduction)
+        if: ${{ env.ENVIRONMENT == 'dev' }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Extract project name from settings.gradle
+        id: extract_project_name
+        run: |
+          PROJECT_NAME=$(grep "rootProject.name" settings.gradle | sed "s/rootProject.name *= *'\(.*\)'/\1/")
+          echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
+          
+      - name: Extract project version from build.gradle
+        id: extract_project_version
+        run: |
+          PROJECT_VERSION=$(grep "^version" build.gradle | sed "s/version *= *'\(.*\)'/\1/")
+          echo "PROJECT_VERSION=$PROJECT_VERSION" >> $GITHUB_ENV
+
+      - name: Get S3 bucket name from SSM
+        id: get_bucket_name
+        run: |
+          S3_BUCKET_NAME=$(aws ssm get-parameter --name "/${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/s3/bucket-name" --query "Parameter.Value" --output text)
+          echo "S3_BUCKET_NAME=$S3_BUCKET_NAME" >> $GITHUB_ENV
+
+      - name: Generate random ID
+        id: random_id
+        run: echo "RANDOM_ID=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Set env variables
+        id: set_env_variables
+        run: |
+          JWT_SECRET=$(aws  ssm get-parameter --name /${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/env-variable/JWT_SECRET --with-decryption --query Parameter.Value --output text --region ${{ ENV.AWS_REGION }})
+          SERVER_PORT=$(aws   ssm get-parameter --name /${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/env-variable/SERVER_PORT --with-decryption --query Parameter.Value --output text --region ${{ ENV.AWS_REGION }})
+          SPRING_DATASOURCE_PASSWORD=$(aws   ssm get-parameter --name /${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/db/password --with-decryption --query Parameter.Value --output text --region ${{ ENV.AWS_REGION }})
+          SPRING_DATASOURCE_URL=$(aws   ssm get-parameter --name /${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/db/url --with-decryption --query Parameter.Value --output text)
+          SPRING_DATASOURCE_USERNAME=$(aws   ssm get-parameter --name /${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/db/username --with-decryption --query Parameter.Value --output text --region ${{ ENV.AWS_REGION }})
+          JWT_EXPIRATION=$(aws   ssm get-parameter --name /${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/env-variable/jwt_expiration --with-decryption --query Parameter.Value --output text --region ${{ ENV.AWS_REGION }})
+          SPRING_FLYWAY_LOCATIONS=$(aws   ssm get-parameter --name /${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/env-variable/SPRING_FLYWAY_LOCATIONS --with-decryption --query Parameter.Value --output text --region ${{ ENV.AWS_REGION }})
+          OPENAI_API_KEY=$(aws   ssm get-parameter --name /${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/env-variable/OPENAI_API_KEY --with-decryption --query Parameter.Value --output text --region ${{ ENV.AWS_REGION }})
+          aws_eventBridge_bus=$(aws   ssm get-parameter --name /${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/env-variable/aws_eventBridge_bus --with-decryption --query Parameter.Value --output text --region ${{ ENV.AWS_REGION }})
+          aws_ses_source=$(aws   ssm get-parameter --name /${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/env-variable/aws_ses_source --with-decryption --query Parameter.Value --output text --region ${{ ENV.AWS_REGION }})
+          aws_sqs_queue_url=$(aws   ssm get-parameter --name /${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/env-variable/aws_sqs_queue_url --with-decryption --query Parameter.Value --output text --region ${{ ENV.AWS_REGION }})
+          AWS_S3_BUCKET=${{env.S3_BUCKET_NAME}}
+          echo "::add-mask::$JWT_SECRET"
+          echo "::add-mask::$SERVER_PORT"
+          echo "::add-mask::$SPRING_DATASOURCE_PASSWORD"
+          echo "::add-mask::$SPRING_DATASOURCE_URL"
+          echo "::add-mask::$SPRING_DATASOURCE_USERNAME"
+          echo "::add-mask::$JWT_EXPIRATION"
+          echo "::add-mask::$SPRING_FLYWAY_LOCATIONS"
+          echo "::add-mask::$AWS_S3_BUCKET"
+          echo "JWT_SECRET=$JWT_SECRET" >> $GITHUB_ENV
+          echo "SERVER_PORT=$SERVER_PORT" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_PASSWORD=$SPRING_DATASOURCE_PASSWORD" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_URL=$SPRING_DATASOURCE_URL" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_USERNAME=$SPRING_DATASOURCE_USERNAME" >> $GITHUB_ENV
+          echo "JWT_EXPIRATION=$JWT_EXPIRATION" >> $GITHUB_ENV
+          echo "SPRING_FLYWAY_LOCATIONS=$SPRING_FLYWAY_LOCATIONS" >> $GITHUB_ENV
+          echo "AWS_S3_BUCKET=$AWS_S3_BUCKET" >> $GITHUB_ENV
+
+      - name: Deploy ${{ env.STACK_TYPE }} stack
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: ${{ github.ref_name }}-${{ env.STACK_TYPE }}-${{ env.PROJECT_NAME }}
+          template: stack-template/auto-scaling-group-compute-stack.yml
+          tags: ${{ env.TAGS }}
+          capabilities: CAPABILITY_NAMED_IAM
+          no-fail-on-empty-changeset: "1"
+          parameter-overrides:
+            "Env=${{ github.ref_name }},ProjectName=${{ env.PROJECT_NAME }},ProjectVersion=${{ env.PROJECT_VERSION }},BucketName=${{env.S3_BUCKET_NAME}}, RandomID=${{ env.RANDOM_ID }},
+            Env1=${{env.JWT_SECRET}},
+            Env2=${{env.SERVER_PORT}},
+            Env3=${{env.SPRING_DATASOURCE_PASSWORD}},
+            Env4=${{env.SPRING_DATASOURCE_URL}},
+            Env5=${{env.SPRING_DATASOURCE_USERNAME}},
+              Env6=${{env.JWT_EXPIRATION}},
+            Env7=${{env.SPRING_FLYWAY_LOCATIONS}},
+            Env8=${{env.AWS_S3_BUCKET}},
+              Env9=${{env.OPENAI_API_KEY}},
+              Env10=${{env.aws_eventBridge_bus}},
+              Env11=${{env.aws_ses_source}},
+              Env12=${{env.aws_sqs_queue_url}}"
+
+      - name: Retrieve and display CloudFormation outputs
+        run: |
+            STACK_NAME="${{ github.ref_name }}-${{ env.STACK_TYPE }}-${{ env.PROJECT_NAME }}"
+            aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs" --output table

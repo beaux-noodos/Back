@@ -1,0 +1,109 @@
+name: CD script
+
+on:
+  workflow_call:
+
+  workflow_dispatch:
+
+jobs:
+  push-script:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      ENVIRONMENT: ${{ github.ref_name == 'prod' || 'dev'}}
+      CONFIG_FILE: stack-template/config.yml
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4.1.1
+
+      - name: Install yq
+        uses: Makepad-fr/setup-yq-action@main
+        with:
+          version: '4.6.0'
+
+      - name: Parse configuration file
+        id: parse_config
+        run: |
+          REGION=$(yq eval ".regions.${ENVIRONMENT}" $CONFIG_FILE)
+          echo "AWS_REGION=$REGION" >> $GITHUB_ENV
+
+      # Configuration for Production
+      - name: Configure AWS credentials (Production)
+        if: ${{ env.ENVIRONMENT == 'prod' }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Configuration for Development
+      - name: Configure AWS credentials (Preproduction)
+        if: ${{ env.ENVIRONMENT == 'dev' }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Extract project name from settings.gradle
+        id: extract_project_name
+        run: |
+          PROJECT_NAME=$(grep "rootProject.name" settings.gradle | sed "s/rootProject.name *= *'\(.*\)'/\1/")
+          echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
+
+      - name: Extract project version from build.gradle
+        id: extract_project_version
+        run: |
+          PROJECT_VERSION=$(grep "^version" build.gradle | sed "s/version *= *'\(.*\)'/\1/")
+          echo "PROJECT_VERSION=$PROJECT_VERSION" >> $GITHUB_ENV
+
+      - name: Get S3 bucket name from SSM
+        id: get_bucket_name
+        run: |
+          S3_BUCKET_NAME=$(aws ssm get-parameter --name "/${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/s3/bucket-name" --query "Parameter.Value" --output text)
+          echo "S3_BUCKET_NAME=$S3_BUCKET_NAME" >> $GITHUB_ENV
+
+      - name: build script
+        run: |
+          touch user-data.sh
+          echo "#!/bin/bash" > user-data.sh
+          echo "cd /home/ec2-user" >> user-data.sh
+          export AWS_S3_BUCKET=$(aws   ssm get-parameter --name /${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/s3/bucket-name --with-decryption --query Parameter.Value --output text --region ${{ ENV.AWS_REGION }})
+          export S3_KEY="${{ env.PROJECT_NAME }}/${{  Env.PROJECT_VERSION }}/${{ env.PROJECT_NAME }}-${{  Env.PROJECT_VERSION }}.jar"
+          echo "echo 'export S3_KEY=${S3_KEY}' >> /etc/environment" >> user-data.sh
+          echo "source /etc/environment"  >> user-data.sh 
+          echo "aws s3 cp s3://${AWS_S3_BUCKET}/${S3_KEY} app.jar" >> user-data.sh
+          
+          echo 'if [ -f app.pid ]; then' >> user-data.sh
+          echo '  PID=$(cat app.pid)' >> user-data.sh
+          echo '  if [[ -n "$PID" && "$PID" =~ ^[0-9]+$ ]]; then' >> user-data.sh
+          echo '    if kill -9 "$PID" > /dev/null 2>&1; then' >> user-data.sh
+          echo '      echo "Process $PID has been terminated."' >> user-data.sh
+          echo '    else' >> user-data.sh
+          echo '      echo "Failed to terminate process $PID. It may not exist."' >> user-data.sh
+          echo '    fi' >> user-data.sh
+          echo '  else' >> user-data.sh
+          echo '    echo "Invalid PID in app.pid: $PID"' >> user-data.sh
+          echo '  fi' >> user-data.sh
+          echo 'else' >> user-data.sh
+          echo '  echo "No app.pid file found. Skipping termination of any previous process."' >> user-data.sh
+          echo 'fi' >> user-data.sh
+  
+          echo "sudo nohup java -jar app.jar > app.log 2>&1 & echo \$! > app.pid" >> user-data.sh
+          echo "sudo chmod 766 app.log" >> user-data.sh
+          echo "sudo chmod 766 app.pid" >> user-data.sh
+          echo "sudo echo \"\$(cat app.pid)\"" >> user-data.sh
+
+      - name: Upload user-data.sh to S3
+        run: |
+          SCRIPT_FILE="user-data.sh"
+          S3_KEY="user-data.sh"
+          aws s3 cp $SCRIPT_FILE s3://${{ env.S3_BUCKET_NAME }}/$S3_KEY
+
+      - name: Upload user-data.service to S3
+        run: |
+          SCRIPT_FILE="stack-template/user-data.service"
+          S3_KEY="user-data.service"
+          aws s3 cp $SCRIPT_FILE s3://${{ env.S3_BUCKET_NAME }}/$S3_KEY

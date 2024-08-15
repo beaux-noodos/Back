@@ -1,0 +1,286 @@
+#stack-template/auto-scaling-group-compute-stack.uml
+AWSTemplateFormatVersion: 2010-09-09
+Description: Auto Scaling Group with Load Balancer
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: app-api
+  ProjectVersion:
+    Type: String
+  Env:
+    Type: String
+  BucketName:
+    Type: String
+  RandomID:
+    Type: String
+
+  Env1:
+    Type: String
+  Env2:
+    Type: String
+  Env3:
+    Type: String
+  Env4:
+    Type: String
+  Env5:
+    Type: String
+  Env6:
+    Type: String
+  Env7:
+    Type: String
+  Env8:
+    Type: String
+  Env9:
+    Type: String
+  Env10:
+    Type: String
+  Env11:
+    Type: String
+  Env12:
+    Type: String
+
+Mappings:
+  EnvironmentToInstanceType:
+    dev:
+      InstanceType: t2.micro
+    test:
+      InstanceType: t2.micro
+    prod:
+      InstanceType: t2.small
+
+Resources:
+  S3AndSsmAccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join
+        - '-'
+        - - !Ref ProjectName
+          - Ec2S3AccessRole
+          - !Ref Env
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: S3AndSsmAccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                  - ssm:GetParametersByPath
+                Resource:
+                  - !Sub arn:aws:s3:::${BucketName}/*
+                  - !Sub arn:aws:s3:::${BucketName}
+                  - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ProjectName}/${Env}/*
+
+  Ec2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref S3AndSsmAccessRole
+
+  LaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      LaunchConfigurationName: !Join
+        - '-'
+        - - !Ref ProjectName
+          - launch-config
+          - !Ref Env
+          - !Ref RandomID
+      ImageId: ami-015875403620174eb
+      InstanceType: !FindInMap
+        - EnvironmentToInstanceType
+        - !Ref Env
+        - InstanceType
+      IamInstanceProfile: !Ref Ec2InstanceProfile
+      KeyName: !Sub '{{resolve:ssm:/${ProjectName}/${Env}/ec2/key-name}}'
+      SecurityGroups:
+        - !Sub '{{resolve:ssm:/${ProjectName}/${Env}/ec2/security-group-id}}'
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash -xe
+            sudo yum update -y
+            sudo yum install -y java-17-amazon-corretto-devel aws-cli 
+            export BucketName="${BucketName}"
+            export ProjectVersion="${ProjectVersion}"
+            export ProjectName="${ProjectName}"
+            export AwsRegion="${AWS::Region}"
+            echo "export AWS_REGION=$AwsRegion" >> /etc/environment
+            echo "export JWT_SECRET=\"${Env1}\"" >> /etc/environment
+            echo "export SERVER_PORT=\"${Env2}\"" >> /etc/environment
+            echo "export SPRING_DATASOURCE_PASSWORD=\"${Env3}\"" >> /etc/environment
+            echo "export SPRING_DATASOURCE_URL=\"${Env4}\"" >> /etc/environment
+            echo "export SPRING_DATASOURCE_USERNAME=\"${Env5}\"" >> /etc/environment
+          echo "export jwt_expiration=\"${Env6}\"" >> /etc/environment
+            echo "export SPRING_FLYWAY_LOCATIONS=\"${Env7}\"" >> /etc/environment
+            echo "export AWS_S3_BUCKET=\"${Env8}\"" >> /etc/environment
+          echo "export OPENAI_API_KEY=\"${Env9}\"" >> /etc/environment
+          echo "export aws_eventBridge_bus=\"${Env10}\"" >> /etc/environment
+          echo "export aws_ses_source=\"${Env11}\"" >> /etc/environment
+          echo "export aws_sqs_queue_url=\"${Env12}\"" >> /etc/environment
+            source /etc/environment
+            cd /home/ec2-user
+            source .bashrc
+            aws s3 cp s3://$BucketName/user-data.sh user-data.sh
+            aws s3 cp s3://$BucketName/$ProjectName/$ProjectVersion/$ProjectName-$ProjectVersion.jar app.jar
+            sudo nohup java -jar app.jar > app.log 2>&1 & echo \$! > app.pid
+            chmod 766 app.log
+            chmod 766 app.pid
+            chmod +x user-data.sh
+            #./user-data.sh
+            sudo aws s3 cp s3://$BucketName/user-data.service /etc/systemd/system/user-data.service
+            sudo systemctl daemon-reload
+            sudo systemctl enable user-data.service
+            sudo systemctl start user-data.service
+            #sudo systemctl status user-data.service
+            #sudo reboot
+
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: !Join
+        - '-'
+        - - !Ref ProjectName
+          - asg
+          - !Ref Env
+          - !Ref RandomID
+      VPCZoneIdentifier:
+        - !Sub '{{resolve:ssm:/${ProjectName}/${Env}/vpc/subnet-id1}}'
+        - !Sub '{{resolve:ssm:/${ProjectName}/${Env}/vpc/subnet-id2}}'
+        - !Sub '{{resolve:ssm:/${ProjectName}/${Env}/vpc/subnet-id3}}'
+      LaunchConfigurationName: !Ref LaunchConfiguration
+      MinSize: '1'
+      MaxSize: '3'
+      DesiredCapacity: '1'
+      TargetGroupARNs:
+        - !Ref ApplicationTargetGroup
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref ProjectName
+              - asg
+              - !Ref Env
+          PropagateAtLaunch: true
+
+  ApplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Join
+        - '-'
+        - - !Ref ProjectName
+          - alb
+          - !Ref Env
+      Scheme: internet-facing
+      Subnets:
+        - !Sub '{{resolve:ssm:/${ProjectName}/${Env}/vpc/subnet-id1}}'
+        - !Sub '{{resolve:ssm:/${ProjectName}/${Env}/vpc/subnet-id2}}'
+        - !Sub '{{resolve:ssm:/${ProjectName}/${Env}/vpc/subnet-id3}}'
+      SecurityGroups:
+        - !Sub '{{resolve:ssm:/${ProjectName}/${Env}/ec2/security-group-id}}'
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: '60'
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref ProjectName
+              - alb
+              - !Ref Env
+
+  ApplicationTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Join
+        - '-'
+        - - !Ref ProjectName
+          - tg
+          - !Ref Env
+      Port: 8080
+      Protocol: HTTP
+      VpcId: !Sub '{{resolve:ssm:/${ProjectName}/${Env}/vpc/id}}'
+      HealthCheckProtocol: HTTP
+      HealthCheckPort: '8080'
+      HealthCheckPath: /ping
+      Matcher:
+        HttpCode: 200
+      TargetType: instance
+
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ApplicationTargetGroup
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
+      Port: '80'
+      Protocol: HTTP
+  ApiGatewayRestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Join
+        - '-'
+        - - !Ref ProjectName
+          - api
+          - !Ref Env
+      Description: API Gateway for ALB
+      EndpointConfiguration:
+        Types: [ "REGIONAL" ]
+
+  ApiGatewayResource:
+      Type: AWS::ApiGateway::Resource
+      Properties:
+        ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+        PathPart: "{proxy+}"
+        RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayMethod:
+      Type: AWS::ApiGateway::Method
+      Properties:
+        AuthorizationType: NONE
+        HttpMethod: ANY
+        ResourceId: !Ref ApiGatewayResource
+        RestApiId: !Ref ApiGatewayRestApi
+        Integration:
+          Type: HTTP_PROXY
+          IntegrationHttpMethod: ANY
+          Uri: !Join
+            - ""
+            - - "http://"
+              - !GetAtt ApplicationLoadBalancer.DNSName
+              - "/{proxy}"
+          PassthroughBehavior: WHEN_NO_MATCH
+
+  ApiGatewayDeployment:
+      Type: AWS::ApiGateway::Deployment
+      Properties:
+        RestApiId: !Ref ApiGatewayRestApi
+        StageName: "prod"
+      DependsOn: ApiGatewayMethod
+
+Outputs:
+    LoadBalancerDNSName:
+      Description: The DNS name of the load balancer
+      Value: !GetAtt ApplicationLoadBalancer.DNSName
+
+    AutoScalingGroupName:
+      Description: The name of the Auto Scaling Group
+      Value: !Ref AutoScalingGroup
+
+    ApiGatewayUrl:
+      Description: The URL of the API Gateway
+      Value: !Sub "https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/prod/"

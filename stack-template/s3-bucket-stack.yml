@@ -1,0 +1,35 @@
+#stack-template/s3-bucket-stack.uml
+AWSTemplateFormatVersion: 2010-09-09
+Description: CD s3 bucket for file storage
+
+Parameters:
+  Env:
+    Type: String
+  ProjectName:
+    Type: String
+    Default: appname-api #replace with your spring boot app name in settings.gradle
+    Description: The project name for the S3 bucket.
+
+Resources:
+  Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  BucketSSM:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/', !Ref ProjectName, '/', !Ref Env, '/s3/bucket-name']]
+      Type: String
+      Value: !Ref Bucket
+
+Outputs:
+  BucketSSM:
+    Value: !Ref BucketSSM

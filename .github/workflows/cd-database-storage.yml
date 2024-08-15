@@ -1,0 +1,71 @@
+name: CD rds storage
+
+on:
+  workflow_call:
+
+  workflow_dispatch:
+
+jobs:
+  cd-storage:
+    runs-on: ubuntu-latest
+
+    env:
+      ENVIRONMENT: ${{ github.ref_name == 'prod' || 'dev'}}
+      CONFIG_FILE: stack-template/config.yml
+      AVAILABILITY_ZONE: eu-west-3a
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4.1.1
+
+      - name: Install yq
+        uses: Makepad-fr/setup-yq-action@main
+        with:
+          version: '4.6.0'
+
+      - name: Parse configuration file
+        id: parse_config
+        run: |
+          REGION=$(yq eval ".regions.${ENVIRONMENT}" $CONFIG_FILE)
+          APP_TAG=$(yq eval ".tags.app" $CONFIG_FILE)
+          USER_TAG=$(yq eval ".tags.user" $CONFIG_FILE)
+          DB_NAME=$(yq eval ".database.name" $CONFIG_FILE)
+          TAGS="[ { \"Key\": \"app\", \"Value\": \"$APP_TAG\" }, { \"Key\": \"env\", \"Value\": \"${{ github.ref_name }}\" }, { \"Key\": \"user\", \"Value\": \"$USER_TAG\" } ]"
+          echo "AWS_REGION=$REGION" >> $GITHUB_ENV
+          echo "TAGS=$TAGS" >> $GITHUB_ENV
+          echo "DB_NAME=$DB_NAME" >> $GITHUB_ENV
+
+      # Configuration for Production
+      - name: Configure AWS credentials (Production)
+        if: ${{ env.ENVIRONMENT == 'prod' }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Configuration for Development
+      - name: Configure AWS credentials (Preproduction)
+        if: ${{ env.ENVIRONMENT == 'dev' }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Extract project name from settings.gradle
+        id: extract_project_name
+        run: |
+          PROJECT_NAME=$(grep "rootProject.name" settings.gradle | sed "s/rootProject.name *= *'\(.*\)'/\1/")
+          echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
+
+      - name: Deploy database stack
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: ${{ github.ref_name }}-database-${{ env.PROJECT_NAME }}
+          template: stack-template/rds-database-stack.yml
+          tags: ${{ env.TAGS }}
+          capabilities: CAPABILITY_NAMED_IAM
+          no-fail-on-empty-changeset: "1"
+          parameter-overrides:
+            "Env=${{ github.ref_name }},ProjectName=${{ env.PROJECT_NAME }},AvailabilityZone=${{ env.AVAILABILITY_ZONE }},DBName=${{ env.DB_NAME }}"

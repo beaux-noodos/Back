@@ -1,0 +1,13 @@
+[Unit]
+Description=Run user-data.sh on startup
+After=network.target
+
+[Service]
+ExecStart=/bin/bash /home/ec2-user/user-data.sh
+WorkingDirectory=/home/ec2-user
+ExecStartPre=/bin/chmod +x /home/ec2-user/user-data.sh
+Restart=on-failure
+User=ec2-user
+
+[Install]
+WantedBy=multi-user.target

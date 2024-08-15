@@ -1,0 +1,17 @@
+# stack-template/config.yml
+
+regions:
+  prod: eu-west-3
+  dev: eu-west-3
+
+az:
+  prod: eu-west-3a
+  dev: eu-west-3a
+
+database:
+  name: "bnbs_hackathon_db"
+
+tags:
+  # use to store bucket name in SSM
+  app: "bnbs-hackathon-api"
+  user: "team-xxx"

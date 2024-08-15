@@ -1,0 +1,96 @@
+#stack-template/rds-database-stack.yml
+AWSTemplateFormatVersion: 2010-09-09
+Description: Postgres Storage
+
+Parameters:
+  AvailabilityZone:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Default: eu-west-3a
+  ProjectName:
+    Type: String
+    Default: app-api
+  Env:
+    Type: String
+  DBName:
+    Type: String
+    Default: app-api-rds
+
+Conditions:
+  IsProdEnv: !Equals
+    - !Ref Env
+    - 'prod'
+
+Resources:
+  Ec2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Join [ "-", [ !Ref ProjectName, "ec2", security-group, !Ref Env ] ]
+      GroupDescription: Enable SSH and webpage access
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8080'
+          ToPort: '8080'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+
+  RdsDbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Join ["-", [!Ref ProjectName, "rds-ec2", sg, !Ref Env]]
+      GroupDescription: Allow postgres inbound traffic
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !GetAtt Ec2SecurityGroup.GroupId
+      Tags:
+        - Key: Name
+          Value: !Join ["-", [!Ref ProjectName, security-group, !Ref Env]]
+
+  RdsDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      #AvailabilityZone: !Ref AvailabilityZone
+      MultiAZ: true
+      DBName: !Ref DBName
+      AllocatedStorage: "5"
+      DBInstanceClass: db.t3.micro
+      Engine: postgres
+      EngineVersion: 15
+      MasterUsername: !Sub '{{resolve:ssm:/${ProjectName}/${Env}/db/username}}'
+      MasterUserPassword: !Sub '{{resolve:ssm:/${ProjectName}/${Env}/db/password}}'
+      Tags:
+        - Key: Name
+          Value: !Join ["-", [!Ref ProjectName, "rds-db" , !Ref Env]]
+      VPCSecurityGroups:
+        - !GetAtt RdsDbSecurityGroup.GroupId
+    DeletionPolicy: Snapshot
+    UpdateReplacePolicy: Snapshot
+
+  RdsDatabaseUrlSSM:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/', !Ref ProjectName, '/', !Ref Env, '/db/url']]
+      Type: String
+      Value: !Join [ '', [ 'jdbc:postgresql://' , !GetAtt RdsDatabase.Endpoint.Address, ':' , !GetAtt RdsDatabase.Endpoint.Port , '/' , !Ref DBName ] ]
+
+  RdsDatabaseCIdentifierSSM:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/', !Ref ProjectName, '/', !Ref Env, '/db/identifier']]
+      Type: String
+      Value: !GetAtt RdsDatabase.Endpoint.Address
+
+  Ec2SecurityGroupSSM:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/', !Ref ProjectName, '/', !Ref Env, '/ec2/security-group-id']]
+      Type: String
+      Value: !GetAtt Ec2SecurityGroup.GroupId

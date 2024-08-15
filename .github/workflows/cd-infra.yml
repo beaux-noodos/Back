@@ -1,0 +1,31 @@
+name: CD infra
+
+on:
+  push:
+    branches:
+      - 'prod'
+      - 'dev'
+
+  workflow_dispatch:
+
+jobs:
+  deploy-bucket:
+    uses: ./.github/workflows/cd-file-storage.yml
+    secrets: inherit
+  deploy-database:
+    uses: ./.github/workflows/cd-database-storage.yml
+    secrets: inherit
+  push-artefact:
+    needs: [ deploy-bucket ]
+    if: ${{ needs.deploy-bucket.result == 'success' && (github.ref_name == 'prod' || github.ref_name == 'dev') }}
+    uses: ./.github/workflows/cd-artefact-push.yml
+    secrets: inherit
+  push-script:
+    needs: [ deploy-bucket , deploy-database]
+    uses: ./.github/workflows/cd-script.yml
+    secrets: inherit
+  deploy-compute:
+    needs: [ push-artefact, push-script ]
+    uses: ./.github/workflows/cd-auto-scaling-group-compute.yml
+    #if: ${{ needs.deploy-bucket.result == 'success' && (github.ref_name == 'prod' || github.ref_name == 'dev') }}
+    secrets: inherit

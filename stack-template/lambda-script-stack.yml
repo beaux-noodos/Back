@@ -1,0 +1,157 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Lambda Function for triggering EC2 script execution on S3 upload
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: app-api
+  Env:
+    Type: String
+  ProjectVersion:
+    Type: String
+
+Resources:
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join
+        - '-'
+        - - !Ref ProjectName
+          - LambdaExecutionRole
+          - !Ref Env
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecutionPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:DescribeInstances
+                  - ec2:SendCommand
+                  - s3:GetObject
+                  - ssm:GetParameter
+                Resource: '*'
+
+  MyLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Join
+        - '-'
+        - - !Ref ProjectName
+          - DeployLambda
+          - !Ref Env
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: python3.9
+      Environment:
+        Variables:
+          PROJECT_NAME: !Ref ProjectName
+          PROJECT_VERSION: !Ref ProjectVersion
+          ENV: !Ref Env
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          def handler(event, context):
+          
+              project_name = os.getenv('PROJECT_NAME')
+              project_version = os.getenv('PROJECT_VERSION')
+              env = os.getenv('ENV')
+              if not project_name or not project_version or not env:
+                return {
+                'statusCode': 400,
+                'body': json.dumps('Error: Missing environment variables')
+              }
+              key = f'{project_name}/{project_version}/{project_name}-{project_version}.jar'
+              ec2_client = boto3.client('ec2')
+              ssm_client = boto3.client('ssm')
+              # Get the Instance ID and command from SSM
+                  # Retrieve the EC2 instance ID from SSM
+              instance_id_path = f"/{project_name}/{env}/ec2/instance-id"
+              response = ssm_client.get_parameter(Name=instance_id_path)
+              instance_id = response['Parameter']['Value']
+              bucket_name = event['bucket_name']
+              # Fetch environment variables from SSM
+              env_vars = {}
+              for var in ['JWT_SECRET','SERVER_PORT', 'SPRING_FLYWAY_LOCATIONS', 'aws_region', 'default_admin_password']:
+                  param = ssm_client.get_parameter(Name=f"/{event['project_name']}/{event['env']}/env-variable/{var}", WithDecryption=True)
+                  env_vars[var] = param['Parameter']['Value']
+          
+              # Fetch database parameters
+              db_password = ssm_client.get_parameter(Name=f"/{event['project_name']}/{event['env']}/db/password", WithDecryption=True)['Parameter']['Value']
+              db_url = ssm_client.get_parameter(Name=f"/{event['project_name']}/{event['env']}/db/url")['Parameter']['Value']
+              db_username = ssm_client.get_parameter(Name=f"/{event['project_name']}/{event['env']}/db/username")['Parameter']['Value']
+
+              # Fetch S3 bucket name from SSM
+              s3_bucket = ssm_client.get_parameter(Name=f"/{event['project_name']}/{event['env']}/s3/bucket-name")['Parameter']['Value']
+
+              # Prepare commands
+              stop_cmd = "kill -9 $(cat app.pid)"
+              fetch_cmd = f"aws s3 cp s3://{bucket_name}/{key} app.jar"
+              env_cmds = "\n".join([f"export {k}={v}" for k, v in env_vars.items()])
+              db_cmds = [
+                  f"export SPRING_DATASOURCE_PASSWORD={db_password}",
+                  f"export SPRING_DATASOURCE_URL={db_url}",
+                  f"export SPRING_DATASOURCE_USERNAME={db_username}"
+              ]
+              start_cmd = "nohup java -jar app.jar > app.log 2>&1 & echo $! > app.pid"
+
+              full_cmd = "\n".join([stop_cmd, fetch_cmd] + db_cmds + [env_cmds, start_cmd])
+
+              # Run the command on EC2
+              response = ec2_client.send_command(
+                  InstanceIds=[instance_id],
+                  DocumentName="AWS-RunShellScript",
+                  Parameters={'commands': [full_cmd]}
+              )
+
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps('Command executed successfully!')
+              }
+
+
+  S3BucketNotificationConfiguration:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '{{resolve:ssm:/${ProjectName}/${Env}/s3/bucket-name}}'
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt MyLambdaFunction.Arn
+            Filter:
+              Key:
+                FilterRules:
+                  - Name: prefix
+                    Value: !Sub '${ProjectName}/'
+
+  S3BucketNotificationPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt MyLambdaFunction.Arn
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub 'arn:aws:s3:::{{resolve:ssm:/${ProjectName}/${Env}/s3/bucket-name}}'
+      SourceAccount: !Ref AWS::AccountId
+
+  LambdaInvokeRolePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: LambdaInvokePolicy
+      Roles:
+        - !Ref LambdaExecutionRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource: !Sub 'arn:aws:s3:::{{resolve:ssm:/${ProjectName}/${Env}/s3/bucket-name}}/*'
+
