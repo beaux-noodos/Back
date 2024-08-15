@@ -111,6 +111,10 @@ jobs:
           echo "JWT_EXPIRATION=$JWT_EXPIRATION" >> $GITHUB_ENV
           echo "SPRING_FLYWAY_LOCATIONS=$SPRING_FLYWAY_LOCATIONS" >> $GITHUB_ENV
           echo "AWS_S3_BUCKET=$AWS_S3_BUCKET" >> $GITHUB_ENV
+          echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> $GITHUB_ENV
+          echo "aws_eventBridge_bus=$aws_eventBridge_bus" >> $GITHUB_ENV
+          echo "aws_ses_source=$aws_ses_source" >> $GITHUB_ENV
+          echo "aws_sqs_queue_url=$aws_sqs_queue_url" >> $GITHUB_ENV
 
       - name: Deploy ${{ env.STACK_TYPE }} stack
         uses: aws-actions/aws-cloudformation-github-deploy@v1
