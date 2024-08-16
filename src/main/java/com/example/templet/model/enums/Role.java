@@ -1,6 +1,8 @@
 package com.example.templet.model.enums;
 
 public enum Role {
+  TECHNICAL_SOLUTION,
   MANAGER,
-  CLIENT
+  INVESTOR,
+  PROJECT_OWNER
 }

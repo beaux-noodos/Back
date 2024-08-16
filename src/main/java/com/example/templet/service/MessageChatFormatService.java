@@ -5,11 +5,11 @@ import static com.example.templet.service.utils.FormatString.escapeJsonString;
 import com.example.templet.model.BoundedPageSize;
 import com.example.templet.model.PageFromOne;
 import com.example.templet.model.validator.EntityModelValidator;
-import com.example.templet.repository.CourseReactionRepository;
-import com.example.templet.repository.CourseRepository;
 import com.example.templet.repository.MessageChatFormatRepository;
-import com.example.templet.repository.model.Course;
+import com.example.templet.repository.ProjectReactionRepository;
+import com.example.templet.repository.ProjectRepository;
 import com.example.templet.repository.model.MessageChatFormatEntity;
+import com.example.templet.repository.model.Project;
 import com.example.templet.repository.model.User;
 import com.example.templet.template.chat.ChatService;
 import com.example.templet.template.chat.ChatTheme;
@@ -29,8 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 public class MessageChatFormatService {
-  private final CourseRepository repository;
-  private final CourseReactionRepository xxxxxReactionRepository;
+  private final ProjectRepository repository;
+  private final ProjectReactionRepository xxxxxReactionRepository;
   private EntityModelValidator entityModelValidator;
 
   private final UserService userService;
@@ -97,12 +97,12 @@ public class MessageChatFormatService {
             (assistantThemeMessage),
             List.of(
                 GlobalThemStructure.builder()
-                    .isInChat(new Course())
+                    .isInChat(new Project())
                     .isInChatService(
-                        new CourseService(
+                        new ProjectService(
                             repository, xxxxxReactionRepository, entityModelValidator))
-                    .chatTheme(ChatTheme.COURSE)
-                    .aClass(Course.class)
+                    .chatTheme(ChatTheme.PROJECT)
+                    .aClass(Project.class)
                     .build()));
 
     String assistantMessage =

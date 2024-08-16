@@ -1,6 +1,6 @@
 package com.example.templet.repository.model;
 
-import com.example.templet.model.enums.CourseStatus;
+import com.example.templet.model.enums.ProjectStatus;
 import com.example.templet.template.chat.IsInChat;
 import com.example.templet.template.file.HavePicture;
 import com.example.templet.template.sucgestIAWithReaction.HaveReaction;
@@ -35,8 +35,8 @@ import org.hibernate.type.SqlTypes;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "\"course\"")
-public class Course extends HaveReaction implements Serializable, HavePicture, IsInChat {
+@Table(name = "\"project\"")
+public class Project extends HaveReaction implements Serializable, HavePicture, IsInChat {
   @Id private String id;
   @CreationTimestamp private Instant creationDatetime = Instant.now();
   @UpdateTimestamp private Instant lastUpdateDatetime;
@@ -51,37 +51,44 @@ public class Course extends HaveReaction implements Serializable, HavePicture, I
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
-      name = "course_course_category", // Nom de la table de jointure
-      joinColumns = @JoinColumn(name = "course_category_id"), // Colonne pour Course
-      inverseJoinColumns = @JoinColumn(name = "course_id") // Colonne pour CourseCategory
+      name = "project_project_category", // Nom de la table de jointure
+      joinColumns = @JoinColumn(name = "project_category_id"), // Colonne pour Project
+      inverseJoinColumns = @JoinColumn(name = "project_id") // Colonne pour ProjectCategory
       )
-  private List<CourseCategory> courseCategorise;
+  private List<ProjectCategory> projectCategorise;
 
-  @JoinTable(
-      name = "course_interested",
-      joinColumns = @JoinColumn(name = "course_id"),
-      inverseJoinColumns = @JoinColumn(name = "user_id"))
-  @ManyToMany(fetch = FetchType.EAGER)
-  private List<User> followers;
+  @ManyToOne
+  @JoinColumn(name = "investor_id")
+  @JsonIgnore
+  private User investor;
 
-  @JoinTable(
-      name = "course_followers",
-      joinColumns = @JoinColumn(name = "course_id"),
-      inverseJoinColumns = @JoinColumn(name = "user_id"))
-  @ManyToMany(fetch = FetchType.EAGER)
-  private List<User> interestedUsers;
+  @ManyToOne
+  @JoinColumn(name = "technical_solution_id")
+  @JsonIgnore
+  private User technicalSolution;
 
-  @OneToMany(mappedBy = "course", fetch = FetchType.EAGER)
-  private List<CourseSession> sessions;
+  @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
+  private List<ProjectSession> sessions;
 
   @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   @Enumerated(EnumType.STRING)
-  private CourseStatus courseStatus;
+  private ProjectStatus projectStatus;
 
   private String imageKey;
   private double price;
 
   private boolean pictureIsImplemented;
+
+  @ManyToOne
+  @JoinColumn(name = "localisation_id")
+  @JsonIgnore
+  private Location localisation;
+
+  private boolean investorNeed;
+  private boolean technicalSolutionNeed;
+
+  @UpdateTimestamp private Instant endDatetime;
+  @UpdateTimestamp private Instant startDatetime;
 
   @Override
   public Boolean getPictureIsImplemented() {
@@ -95,30 +102,30 @@ public class Course extends HaveReaction implements Serializable, HavePicture, I
 
   @Override
   public String getDirectory() {
-    return "course";
+    return "project";
   }
 
   @Override
   public String getData() {
     String category = "";
-    for (CourseCategory courseCategory : courseCategorise) {
-      category += courseCategory.getName() + ",";
+    for (ProjectCategory projectCategory : projectCategorise) {
+      category += projectCategory.getName() + ",";
     }
     int coursHeure = 0;
-    for (CourseSession courseSession : sessions) {
-      int heurs = courseSession.getStartDatetime().compareTo(courseSession.getEndDatetime());
+    for (ProjectSession projectSession : sessions) {
+      int heurs = projectSession.getStartDatetime().compareTo(projectSession.getEndDatetime());
       if (heurs > 0) {
         coursHeure += heurs;
       } else {
         coursHeure -= heurs;
       }
     }
-    return " cours de : "
+    return " projet de : "
         + this.getTitle()
         + " "
         + this.getDescription()
         + "/"
-        + " enseignier par : "
+        + " crer par par : "
         + this.user.getFirstname()
         + " "
         + this.user.getLastname()
@@ -129,11 +136,19 @@ public class Course extends HaveReaction implements Serializable, HavePicture, I
         + " nombres d'heure de ccours: "
         + coursHeure
         + "/"
-        + " nombre de pesone qui sui le cours : "
-        + this.followers.size()
+        + (this.investor == null
+            ? ""
+            : (" investi par  : "
+                + this.investor.getLastname()
+                + " "
+                + this.investor.getFirstname()))
         + "/"
-        + " nomre de persogne qui sont interesser par le cours : "
-        + this.interestedUsers.size()
+        + (this.technicalSolution == null
+            ? ""
+            : (" solutioner thechiqueent par : "
+                + this.technicalSolution.getLastname()
+                + " "
+                + this.technicalSolution.getFirstname()))
         + "/"
         + "\n";
   }

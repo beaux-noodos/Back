@@ -4,9 +4,9 @@ import com.example.templet.model.BoundedPageSize;
 import com.example.templet.model.PageFromOne;
 import com.example.templet.model.exception.NotFoundException;
 import com.example.templet.model.validator.EntityModelValidator;
-import com.example.templet.repository.CourseReactionRepository;
-import com.example.templet.repository.CourseRepository;
-import com.example.templet.repository.model.Course;
+import com.example.templet.repository.ProjectReactionRepository;
+import com.example.templet.repository.ProjectRepository;
+import com.example.templet.repository.model.Project;
 import com.example.templet.service.utils.AIUtils;
 import com.example.templet.template.chat.IsInChat;
 import com.example.templet.template.chat.IsInChatService;
@@ -28,90 +28,90 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
-public class CourseService extends HaveReactionService
+public class ProjectService extends HaveReactionService
     implements HavePictureService, IsInChatService {
-  private final CourseRepository repository;
-  private final CourseReactionRepository xxxxxReactionRepository;
+  private final ProjectRepository repository;
+  private final ProjectReactionRepository xxxxxReactionRepository;
   private EntityModelValidator entityModelValidator;
 
-  public List<Course> findAll() {
+  public List<Project> findAll() {
     return repository.findAll();
   }
 
-  public List<Course> findAll(PageFromOne page, BoundedPageSize pageSize) {
+  public List<Project> findAll(PageFromOne page, BoundedPageSize pageSize) {
     Pageable pageable = PageRequest.of(page.getValue() - 1, pageSize.getValue());
     return repository.findAllWithPage(pageable);
   }
 
   @Transactional
-  public Course save(Course toSave) {
+  public Project save(Project toSave) {
     entityModelValidator.accept(toSave);
     return repository.save(toSave);
   }
 
   @Override
   @Transactional
-  public Course save(HaveReaction toSave) {
-    Course course = (Course) toSave;
+  public Project save(HaveReaction toSave) {
+    Project project = (Project) toSave;
     entityModelValidator.accept(toSave);
-    return repository.save(course);
+    return repository.save(project);
   }
 
   @Override
   @Transactional
   public HavePicture save(HavePicture havePicture) {
-    Course course = (Course) havePicture;
-    entityModelValidator.accept(course);
-    return repository.save(course);
+    Project project = (Project) havePicture;
+    entityModelValidator.accept(project);
+    return repository.save(project);
   }
 
   @Transactional
-  public Course crupdateCourse(Course course, String courseId) {
-    entityModelValidator.accept(course);
-    Optional<Course> courseOptional = repository.findById(courseId);
-    if (courseOptional.isPresent()) {
-      Course courseFromDomain = courseOptional.get();
-      if (course.getUser() == null) {
-        course.setUser(courseFromDomain.getUser());
+  public Project crupdateProject(Project project, String projectId) {
+    entityModelValidator.accept(project);
+    Optional<Project> projectOptional = repository.findById(projectId);
+    if (projectOptional.isPresent()) {
+      Project projectFromDomain = projectOptional.get();
+      if (project.getUser() == null) {
+        project.setUser(projectFromDomain.getUser());
       }
-      course.setCreationDatetime(courseFromDomain.getCreationDatetime());
+      project.setCreationDatetime(projectFromDomain.getCreationDatetime());
     }
-    return repository.save(course);
+    return repository.save(project);
   }
 
   @Override
-  public Course findById(String id) {
+  public Project findById(String id) {
     return repository
         .findById(id)
-        .orElseThrow(() -> new NotFoundException("Course with id " + id + " not found"));
+        .orElseThrow(() -> new NotFoundException("Project with id " + id + " not found"));
   }
 
-  public Boolean checkSelfCourse(String courseId, String courseIdFromEndpoint) {
-    Optional<Course> courseOptional = repository.findById(courseIdFromEndpoint);
-    if (courseOptional.isEmpty()) {
+  public Boolean checkSelfProject(String projectId, String projectIdFromEndpoint) {
+    Optional<Project> projectOptional = repository.findById(projectIdFromEndpoint);
+    if (projectOptional.isEmpty()) {
       return true;
     }
-    Course course = courseOptional.get();
-    return course.getId().equals(courseId);
+    Project project = projectOptional.get();
+    return project.getId().equals(projectId);
   }
 
-  public List<Course> findAllByUserId(String userId, PageFromOne page, BoundedPageSize pageSize) {
+  public List<Project> findAllByUserId(String userId, PageFromOne page, BoundedPageSize pageSize) {
     Pageable pageable = PageRequest.of(page.getValue() - 1, pageSize.getValue());
     return repository.findAllByUserId(userId, pageable);
   }
 
-  public List<Course> findSuggestAi(String userId, PageFromOne page, BoundedPageSize pageSize) {
+  public List<Project> findSuggestAi(String userId, PageFromOne page, BoundedPageSize pageSize) {
     int pageValue = page.getValue();
     int pageSizeValue = pageSize.getValue();
     Pageable pageableXxx = PageRequest.of(0, 500);
 
-    List<Course> courses = repository.findAllByUserId(userId, pageableXxx);
+    List<Project> projects = repository.findAllByUserId(userId, pageableXxx);
 
     Collections.sort(
-        courses,
-        new Comparator<Course>() {
+        projects,
+        new Comparator<Project>() {
           @Override
-          public int compare(Course p1, Course p2) {
+          public int compare(Project p1, Project p2) {
             long point1 =
                 SymbolicAIService.generateUserPersonalPointInOneSubject(
                         new ArrayList<>(), new ArrayList<>())
@@ -125,23 +125,23 @@ public class CourseService extends HaveReactionService
           }
         });
 
-    return AIUtils.getPaginatedList(courses, pageValue, pageSizeValue);
+    return AIUtils.getPaginatedList(projects, pageValue, pageSizeValue);
   }
 
-  public List<Course> findAllCoursesInterestedByUserId(
+  public List<Project> findAllProjectsInvestedInByUserId(
       String userId, PageFromOne page, BoundedPageSize pageSize) {
     Pageable pageable = PageRequest.of(page.getValue() - 1, pageSize.getValue());
-    return repository.findAllCoursesInterestedByUserId(userId, pageable);
+    return repository.findAllProjectsInvestedInByUserId(userId, pageable);
   }
 
-  public List<Course> findAllCoursesFollowersByUserId(
+  public List<Project> findAllProjectsSolvedByUserId(
       String userId, PageFromOne page, BoundedPageSize pageSize) {
     Pageable pageable = PageRequest.of(page.getValue() - 1, pageSize.getValue());
-    return repository.findAllCoursesFollowersByUserId(userId, pageable);
+    return repository.findAllProjectsSolvedByUserId(userId, pageable);
   }
 
   @Override
   public List<IsInChat> getIsInChatToConsider() {
-    return repository.findAll().stream().map(course -> (IsInChat) course).toList();
+    return repository.findAll().stream().map(project -> (IsInChat) project).toList();
   }
 }

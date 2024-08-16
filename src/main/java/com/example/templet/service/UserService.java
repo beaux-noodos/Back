@@ -3,11 +3,12 @@ package com.example.templet.service;
 import com.example.templet.model.BoundedPageSize;
 import com.example.templet.model.PageFromOne;
 import com.example.templet.model.enums.ActionEnum;
+import com.example.templet.model.exception.BadRequestException;
 import com.example.templet.model.exception.NotFoundException;
 import com.example.templet.model.validator.UserValidator;
-import com.example.templet.repository.CourseRepository;
+import com.example.templet.repository.ProjectRepository;
 import com.example.templet.repository.UserRepository;
-import com.example.templet.repository.model.Course;
+import com.example.templet.repository.model.Project;
 import com.example.templet.repository.model.User;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class UserService {
   private final UserRepository repository;
-  private final CourseRepository courseRepository;
+  private final ProjectRepository projectRepository;
   private UserValidator userValidator;
 
   public List<User> findAllByName(String name, PageFromOne page, BoundedPageSize pageSize) {
@@ -88,39 +89,43 @@ public class UserService {
     return user.getId().equals(userId);
   }
 
-  public Course userFolowAction(String userId, String courseId, ActionEnum actionEnum) {
-    Optional<Course> courseOptional = courseRepository.findById(courseId);
-    if (courseOptional.isEmpty()) {
-      throw new NotFoundException("Courses with id " + courseId + " not found");
+  public Project userFolowAction(String userId, String projectId, ActionEnum actionEnum) {
+    Optional<Project> projectOptional = projectRepository.findById(projectId);
+    if (projectOptional.isEmpty()) {
+      throw new NotFoundException("Projects with id " + projectId + " not found");
     }
     Optional<User> userOptional = repository.findById(userId);
     if (userOptional.isEmpty()) {
       throw new NotFoundException("User with id " + userId + " not found");
     }
-    Course course = courseOptional.get();
+    Project project = projectOptional.get();
     User user = userOptional.get();
-    List<User> coursesFolow = course.getInterestedUsers();
-    List<User> coursesInterest = course.getFollowers();
-    if (coursesInterest.contains(user)) {
-      if (actionEnum.equals(ActionEnum.FOLLOW) || actionEnum.equals(ActionEnum.UNINTERESTED)) {
-        coursesInterest.remove(user);
+    User investor = project.getInvestor();
+    User technicalSolution = project.getTechnicalSolution();
+    if (investor != null) {
+      if (actionEnum.equals(ActionEnum.INVEST)) {
+        throw new BadRequestException("Have already an investor");
       }
     } else {
-      if (actionEnum.equals(ActionEnum.INTERESTED)) {
-        coursesInterest.add(user);
+      if (actionEnum.equals(ActionEnum.INVEST)) {
+        project.setInvestor(user);
+      }
+      if (actionEnum.equals(ActionEnum.UN_INVEST)) {
+        project.setInvestor(user);
       }
     }
-    if (coursesFolow.contains(user)) {
-      if (actionEnum.equals(ActionEnum.INTERESTED) || actionEnum.equals(ActionEnum.UNFOLLOW)) {
-        coursesFolow.remove(user);
+    if (technicalSolution != null) {
+      if (actionEnum.equals(ActionEnum.GIVE_SOLUTION)) {
+        throw new BadRequestException("Have already an technical solution");
       }
     } else {
-      if (actionEnum.equals(ActionEnum.FOLLOW)) {
-        coursesFolow.add(user);
+      if (actionEnum.equals(ActionEnum.GIVE_SOLUTION)) {
+        project.setInvestor(technicalSolution);
+      }
+      if (actionEnum.equals(ActionEnum.UN_GIVE_SOLUTION)) {
+        project.setInvestor(null);
       }
     }
-    course.setFollowers(coursesFolow);
-    course.setInterestedUsers(coursesInterest);
-    return courseRepository.save(course);
+    return projectRepository.save(project);
   }
 }

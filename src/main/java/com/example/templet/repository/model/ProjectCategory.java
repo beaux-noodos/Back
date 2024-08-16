@@ -22,8 +22,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "\"course_category\"")
-public class CourseCategory {
+@Table(name = "\"project_category\"")
+public class ProjectCategory {
   @Id private String id;
   @CreationTimestamp private Instant creationDatetime = Instant.now();
   @UpdateTimestamp private Instant lastUpdateDatetime;
@@ -31,7 +31,7 @@ public class CourseCategory {
   private String name;
   private String description;
 
-  @ManyToMany(fetch = FetchType.LAZY, mappedBy = "courseCategorise")
+  @ManyToMany(fetch = FetchType.LAZY, mappedBy = "projectCategorise")
   @JsonIgnore
-  private List<Course> courses;
+  private List<Project> projects;
 }

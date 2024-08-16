@@ -1,8 +1,8 @@
 package com.example.templet.model.enums;
 
 public enum ActionEnum {
-  FOLLOW,
-  INTERESTED,
-  UNFOLLOW,
-  UNINTERESTED
+  INVEST,
+  GIVE_SOLUTION,
+  UN_INVEST,
+  UN_GIVE_SOLUTION
 }

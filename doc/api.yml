@@ -242,6 +242,8 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+          
+
   ## Users resources
   "/users":
     get:
@@ -419,10 +421,10 @@ paths:
           $ref: '#/components/responses/500'
 
 
-  "/users/{id}/projects/{pid}/subscribe":
+  "/users/{id}/invested/projects":
     get:
       summary: "Récupérer les cours suivis par l'utilisateur"
-      operationId: "getUserSubscribedProjects"
+      operationId: "getUserInvestedProjects"
       tags:
         - User
       parameters:
@@ -432,12 +434,39 @@ paths:
           schema:
             type: string
           description: "ID de l'utilisateur"
+      responses:
+        '200':
+          description: "Liste des cours suivis"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        '400':
+          $ref: "#/components/responses/400"
+        '403':
+          $ref: "#/components/responses/403"
+        '404':
+          $ref: "#/components/responses/404"
+        '429':
+          $ref: "#/components/responses/429"
+        '500':
+          $ref: "#/components/responses/500"
+
+  "/users/{id}/solve/projects":
+    get:
+      summary: "Récupérer les cours suivis par l'utilisateur"
+      operationId: "getUserSolveProjects"
+      tags:
+        - User
+      parameters:
         - in: path
-          name: pid
+          name: id
           required: true
           schema:
             type: string
-          description: "ID de l'projects"
+          description: "ID de l'utilisateur"
       responses:
         '200':
           description: "Liste des cours suivis"
@@ -1097,6 +1126,7 @@ components:
       type: string
       enum:
         - PLANNING
+        - IN_PROGRESS
         - CONFIRMED
         - COMPLETED
 

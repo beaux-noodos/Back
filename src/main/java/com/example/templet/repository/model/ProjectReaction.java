@@ -19,15 +19,15 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class CourseReaction extends Reaction implements Serializable {
+public class ProjectReaction extends Reaction implements Serializable {
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "course_id")
+  @JoinColumn(name = "project_id")
   @JsonIgnore
-  private Course subject;
+  private Project subject;
 
   @Override
   public Reaction setSubject(EntityModel subject) {
-    this.subject = (Course) subject;
+    this.subject = (Project) subject;
     return this;
   }
 

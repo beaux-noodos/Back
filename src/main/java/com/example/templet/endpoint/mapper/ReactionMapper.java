@@ -4,10 +4,10 @@ import static com.example.templet.service.utils.EnumMapperUtils.mapEnum;
 
 import com.example.templet.endpoint.rest.model.Reaction;
 import com.example.templet.endpoint.rest.model.ReactionType;
-import com.example.templet.repository.model.CourseReaction;
-import com.example.templet.repository.model.CourseSessionReaction;
 import com.example.templet.repository.model.LocationReaction;
 import com.example.templet.repository.model.NotificationReaction;
+import com.example.templet.repository.model.ProjectReaction;
+import com.example.templet.repository.model.ProjectSessionReaction;
 import com.example.templet.repository.model.SignalisationReaction;
 import com.example.templet.service.UserService;
 import java.util.Map;
@@ -19,10 +19,10 @@ import org.springframework.stereotype.Component;
 public class ReactionMapper {
   private final UserService userService;
 
-  public CourseReaction toDomainCourseReaction(Reaction rest) {
-    CourseReaction reaction = new CourseReaction();
+  public ProjectReaction toDomainProjectReaction(Reaction rest) {
+    ProjectReaction reaction = new ProjectReaction();
     reaction.setId(rest.getId());
-    reaction.setLastUpdateDatetime(rest.getLastUpdateDatetime());
+    reaction.setLastUpdateDatetime(rest.getUpdatedAt());
     reaction.setCreationDatetime(rest.getCreationDatetime());
     reaction.setComment(rest.getComment());
     reaction.setLikeReaction(convertToDomain(rest.getLikeReaction()));
@@ -32,10 +32,10 @@ public class ReactionMapper {
     return reaction;
   }
 
-  public CourseSessionReaction toDomainCourseSessionReaction(Reaction rest) {
-    CourseSessionReaction reaction = new CourseSessionReaction();
+  public ProjectSessionReaction toDomainProjectSessionReaction(Reaction rest) {
+    ProjectSessionReaction reaction = new ProjectSessionReaction();
     reaction.setId(rest.getId());
-    reaction.setLastUpdateDatetime(rest.getLastUpdateDatetime());
+    reaction.setLastUpdateDatetime(rest.getUpdatedAt());
     reaction.setCreationDatetime(rest.getCreationDatetime());
     reaction.setComment(rest.getComment());
     reaction.setLikeReaction(convertToDomain(rest.getLikeReaction()));
@@ -48,7 +48,7 @@ public class ReactionMapper {
   public LocationReaction toDomainLocationReaction(Reaction rest) {
     LocationReaction reaction = new LocationReaction();
     reaction.setId(rest.getId());
-    reaction.setLastUpdateDatetime(rest.getLastUpdateDatetime());
+    reaction.setLastUpdateDatetime(rest.getUpdatedAt());
     reaction.setCreationDatetime(rest.getCreationDatetime());
     reaction.setComment(rest.getComment());
     reaction.setLikeReaction(convertToDomain(rest.getLikeReaction()));
@@ -61,7 +61,7 @@ public class ReactionMapper {
   public NotificationReaction toDomainNotificationReaction(Reaction rest) {
     NotificationReaction reaction = new NotificationReaction();
     reaction.setId(rest.getId());
-    reaction.setLastUpdateDatetime(rest.getLastUpdateDatetime());
+    reaction.setLastUpdateDatetime(rest.getUpdatedAt());
     reaction.setCreationDatetime(rest.getCreationDatetime());
     reaction.setComment(rest.getComment());
     reaction.setLikeReaction(convertToDomain(rest.getLikeReaction()));
@@ -74,7 +74,7 @@ public class ReactionMapper {
   public SignalisationReaction toDomainSignalisationReaction(Reaction rest) {
     SignalisationReaction reaction = new SignalisationReaction();
     reaction.setId(rest.getId());
-    reaction.setLastUpdateDatetime(rest.getLastUpdateDatetime());
+    reaction.setLastUpdateDatetime(rest.getUpdatedAt());
     reaction.setCreationDatetime(rest.getCreationDatetime());
     reaction.setComment(rest.getComment());
     reaction.setLikeReaction(convertToDomain(rest.getLikeReaction()));
@@ -90,7 +90,7 @@ public class ReactionMapper {
       com.example.templet.template.sucgestIAWithReaction.Reaction domain) {
     return new Reaction()
         .id(domain.getId())
-        .lastUpdateDatetime(domain.getLastUpdateDatetime())
+        .updatedAt(domain.getLastUpdateDatetime())
         .creationDatetime(domain.getCreationDatetime())
         .comment(domain.getComment())
         .likeReaction(convertToRest(domain.getLikeReaction()))

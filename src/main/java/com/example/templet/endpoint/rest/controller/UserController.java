@@ -53,7 +53,9 @@ public class UserController {
       HttpServletRequest request) {
     String token = jwtUtils.parseJwt(request.getHeader("Authorization"));
     com.example.templet.model.Whoami whoami = userAuthService.whoami(token);
-    if (whoami.getUser().getRole() == Role.CLIENT) {
+    if (whoami.getUser().getRole() == Role.INVESTOR
+        || whoami.getUser().getRole() == Role.PROJECT_OWNER
+        || whoami.getUser().getRole() == Role.TECHNICAL_SOLUTION) {
       if (toUpdate.getRole() == com.example.templet.endpoint.rest.model.Role.MANAGER) {
         throw new ForbiddenException("An CLIENT cannot update the MANAGER user");
       }
