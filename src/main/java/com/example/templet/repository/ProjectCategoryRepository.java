@@ -13,7 +13,7 @@ public interface ProjectCategoryRepository extends JpaRepository<ProjectCategory
   @Override
   List<ProjectCategory> findAll();
 
-  @Query("SELECT x FROM Project x ")
+  @Query("SELECT x FROM ProjectCategory x ")
   List<ProjectCategory> findAllWithPage(Pageable pageable);
 
   @Override

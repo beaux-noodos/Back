@@ -27,7 +27,7 @@ public interface ProjectSessionRepository extends JpaRepository<ProjectSession, 
           + "JOIN cs.project p "
           + "JOIN p.investor i "
           + "WHERE i.id = :userId "
-          + "ORDER BY cs.startDatetime DESC")
+          + "ORDER BY cs.endDatetime DESC")
   List<ProjectSession> getUsersProjectSessions(String userId, Pageable pageable);
 
   List<ProjectSession> findAllByLocationId(String locationzId, Pageable pageable);

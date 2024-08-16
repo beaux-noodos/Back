@@ -43,7 +43,7 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
-            .cors(Customizer.withDefaults())
+        .cors(Customizer.withDefaults())
         .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
         .sessionManagement(
             manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -70,8 +70,10 @@ public class SecurityConfig {
                     // --- --- GET --- ---
                     .requestMatchers(GET, "/users/*/chat")
                     .authenticated()
-                        .requestMatchers(GET, "/users/*/technical-solution/*/chat")
-                        .authenticated()
+                    .requestMatchers(GET, "/users/*/technical-solution/*/chat")
+                    .authenticated()
+                    .requestMatchers(GET, "/technicalSolution/{id}/prompts")
+                    .authenticated()
                     .requestMatchers(GET, "users/*/solve/projects") // todo: fini
                     .authenticated()
                     .requestMatchers(GET, "users/*/invested/projects") // todo: fini
@@ -106,12 +108,14 @@ public class SecurityConfig {
                     .authenticated()
                     .requestMatchers(GET, "/locations/*/react")
                     .authenticated()
+                    .requestMatchers(GET, "/categories")
+                    .permitAll()
 
                     // --- --- PUT --- ---
                     .requestMatchers(PUT, "/users/*/projects/*/project-sessions/*/react")
                     .authenticated()
-                        .requestMatchers(PUT, "/technical-solution/*/chat")
-                        .authenticated()
+                    .requestMatchers(PUT, "/technical-solution/*/chat")
+                    .authenticated()
                     .requestMatchers(
                         new UserOfUserMatcher(
                             userAuthRepository,

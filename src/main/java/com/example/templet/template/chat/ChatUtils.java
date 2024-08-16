@@ -1,5 +1,9 @@
 package com.example.templet.template.chat;
 
+import com.example.templet.template.chat.DBChat.ChatTheme;
+import com.example.templet.template.chat.DBChat.GlobalThemStructure;
+import com.example.templet.template.chat.DBChat.IsInChat;
+import com.example.templet.template.chat.DBChat.IsInChatService;
 import java.util.List;
 
 public class ChatUtils {
@@ -17,12 +21,11 @@ public class ChatUtils {
       themeList = themeList + "\"" + c.name() + c.name() + "\" ; ";
 
     String value =
-      "Voici une liste de thèmes que tu connais et que tu ne peux ni modifier ni ajouter : "
-          + themeList
-          + ". Pour chacun de ces thèmes, ton rôle est de vérifier s'il y a un lien,"
-          + " même ténu, avec les besoins du client. "
-          + "Pour chaque thème que tu trouves pertinent, tu me renverras exactement cette liste de thèmes,"
-          + " sans aucune modification.";
+        "Voici une liste de thèmes que tu connais et que tu ne peux ni modifier ni ajouter : "
+            + themeList
+            + ". Pour chacun de ces thèmes, ton rôle est de vérifier s'il y a un lien, même ténu,"
+            + " avec les besoins du client. Pour chaque thème que tu trouves pertinent, tu me"
+            + " renverras exactement cette liste de thèmes, sans aucune modification.";
     return value;
   }
 
@@ -60,9 +63,9 @@ public class ChatUtils {
 
   public static String askChat() {
     return "Voici les informations à prendre en compte. Réponds aux"
-        +"questions des clients en t'appuyant sur ces données."
-        +"Si une question ne concerne pas ces informations, réponds poliment que"
-        +"tu n'as pas été programmé pour y répondre. Surtout,"
-        +"tu n'es absolument pas autoriser à ajouter ou modifier des informations.";
+        + "questions des clients en t'appuyant sur ces données."
+        + "Si une question ne concerne pas ces informations, réponds poliment que"
+        + "tu n'as pas été programmé pour y répondre. Surtout,"
+        + "tu n'es absolument pas autoriser à ajouter ou modifier des informations.";
   }
 }

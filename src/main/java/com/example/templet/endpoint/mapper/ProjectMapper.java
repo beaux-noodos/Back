@@ -30,19 +30,26 @@ public class ProjectMapper {
         .price(rest.getPrice())
         .title(rest.getTitle())
         .projectCategorise(
-            rest.getCategories().stream().map(projectCategoryMapper::toDomain).toList())
+            rest.getCategories() == null
+                ? null
+                : rest.getCategories().stream().map(projectCategoryMapper::toDomain).toList())
         .description(rest.getDescription())
-        .imageKey(projectFileervice.getKey(rest.getId()))
+        .imageKey(
+            rest.getPictureIsImplemented() == false ? null : projectFileervice.getKey(rest.getId()))
         .pictureIsImplemented(Boolean.TRUE.equals(rest.getPictureIsImplemented()))
-        .technicalSolution(UserMapper.toDomain(rest.getTechnicalSolution()))
-        .investor(UserMapper.toDomain(rest.getInvestor()))
+        .technicalSolution(
+            rest.getTechnicalSolution() == null
+                ? null
+                : UserMapper.toDomain(rest.getTechnicalSolution()))
+        .investor(rest.getInvestor() == null ? null : UserMapper.toDomain(rest.getInvestor()))
         .sessions(projectSessions)
         .projectStatus(toDomain(rest.getStatus()))
         .startDatetime(rest.getStartDatetime() == null ? null : rest.getStartDatetime())
         .endDatetime(rest.getEndDatetime() == null ? null : rest.getEndDatetime())
         .investorNeed(rest.getNeedInvestor())
         .technicalSolutionNeed(rest.getNeedTechnicalSolution())
-        .localisation(locationMapper.toDomain(rest.getLocalisation()))
+        .localisation(
+            rest.getLocalisation() == null ? null : locationMapper.toDomain(rest.getLocalisation()))
         .build();
   }
 
@@ -57,24 +64,32 @@ public class ProjectMapper {
         .price((float) domain.getPrice())
         .title(domain.getTitle())
         .categories(
-            domain.getProjectCategorise().stream()
-                .map(projectCategory -> projectCategoryMapper.toRest(projectCategory, null))
-                .toList())
+            domain.getProjectCategorise() == null
+                ? null
+                : domain.getProjectCategorise().stream()
+                    .map(projectCategory -> projectCategoryMapper.toRest(projectCategory, null))
+                    .toList())
         .description(domain.getDescription())
         .imageUrl(projectFileervice.getUrl(domain.getId()))
-        .investor(userMapper.toRest(domain.getInvestor()))
+        .investor(domain.getInvestor() == null ? null : userMapper.toRest(domain.getInvestor()))
         .sessions(projectSessions)
         .pictureIsImplemented(domain.getPictureIsImplemented())
         .status(convertToRest(domain.getProjectStatus()))
-        .technicalSolution(userMapper.toRest(domain.getTechnicalSolution()))
-        .investor(userMapper.toRest(domain.getInvestor()))
+        .technicalSolution(
+            domain.getTechnicalSolution() == null
+                ? null
+                : userMapper.toRest(domain.getTechnicalSolution()))
+        .investor(domain.getInvestor() == null ? null : userMapper.toRest(domain.getInvestor()))
         .sessions(projectSessions)
         .status(convertToRest(domain.getProjectStatus()))
         .startDatetime(domain.getStartDatetime() == null ? null : domain.getStartDatetime())
         .endDatetime(domain.getEndDatetime() == null ? null : domain.getEndDatetime())
         .needTechnicalSolution(domain.isTechnicalSolutionNeed())
         .needInvestor(domain.isInvestorNeed())
-        .localisation(locationMapper.toRest(domain.getLocalisation()));
+        .localisation(
+            domain.getLocalisation() == null
+                ? null
+                : locationMapper.toRest(domain.getLocalisation()));
   }
 
   public static StatusEnum convertToRest(com.example.templet.model.enums.ProjectStatus domain) {

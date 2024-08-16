@@ -1,4 +1,4 @@
-package com.example.templet.template.chat;
+package com.example.templet.template.chat.DBChat;
 
 import java.util.List;
 
