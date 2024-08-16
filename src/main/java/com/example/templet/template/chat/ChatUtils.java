@@ -22,7 +22,7 @@ public class ChatUtils {
           + ". Pour chacun de ces thèmes, ton rôle est de vérifier s'il y a un lien,"
           + " même ténu, avec les besoins du client. "
           + "Pour chaque thème que tu trouves pertinent, tu me renverras exactement cette liste de thèmes,"
-          + " sans aucune modification."
+          + " sans aucune modification.";
     return value;
   }
 
@@ -63,6 +63,6 @@ public class ChatUtils {
         +"questions des clients en t'appuyant sur ces données."
         +"Si une question ne concerne pas ces informations, réponds poliment que"
         +"tu n'as pas été programmé pour y répondre. Surtout,"
-        +"tu n'es absolument pas autoriser à ajouter ou modifier des informations."
+        +"tu n'es absolument pas autoriser à ajouter ou modifier des informations.";
   }
 }
