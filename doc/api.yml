@@ -161,7 +161,7 @@ paths:
           $ref: "#/components/responses/500"
 
   "/technicalSolution/{id}/prompts":
-    post:
+    get:
       tags:
         - Chatbot
       summary: user.
@@ -195,7 +195,7 @@ paths:
 
 
   "/categories":
-    post:
+    get:
       tags:
         - category
       summary: categories.
