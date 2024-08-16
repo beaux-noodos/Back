@@ -87,7 +87,7 @@ public class SecurityConfig {
                             userAuthRepository,
                             jwtUtils,
                             GET,
-                            "/users/*/project-sessions",
+                            "/users/*/projectSessions",
                             List.of(Role.MANAGER.name())))
                     .authenticated()
                     .requestMatchers(GET, "/projects")
@@ -96,11 +96,11 @@ public class SecurityConfig {
                     .authenticated()
                     .requestMatchers(GET, "/projects/*/react")
                     .authenticated()
-                    .requestMatchers(GET, "/projects/*/project-sessions")
+                    .requestMatchers(GET, "/projects/*/projectSessions")
                     .permitAll()
-                    .requestMatchers(GET, "/projects/*/project-sessions/*")
+                    .requestMatchers(GET, "/projects/*/projectSessions/*")
                     .authenticated()
-                    .requestMatchers(GET, "/projects/*/project-sessions/*/react")
+                    .requestMatchers(GET, "/projects/*/projectSessions/*/react")
                     .authenticated()
                     .requestMatchers(GET, "/locations")
                     .permitAll()
@@ -112,7 +112,7 @@ public class SecurityConfig {
                     .permitAll()
 
                     // --- --- PUT --- ---
-                    .requestMatchers(PUT, "/users/*/projects/*/project-sessions/*/react")
+                    .requestMatchers(PUT, "/users/*/projects/*/projectSessions/*/react")
                     .authenticated()
                     .requestMatchers(PUT, "/technical-solution/*/chat")
                     .authenticated()
@@ -146,7 +146,7 @@ public class SecurityConfig {
                             "/projects/*/pictures",
                             List.of(Role.MANAGER.name()))) // todo: fini
                     .authenticated()
-                    .requestMatchers(PUT, "/projects/*/project-sessions/*")
+                    .requestMatchers(PUT, "/projects/*/projectSessions/*")
                     .authenticated()
                     .requestMatchers(PUT, "/locations/*")
                     .authenticated()
