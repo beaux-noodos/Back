@@ -22,6 +22,8 @@ public abstract class AbstractContextInitializer
     TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
         applicationContext,
         "sentry.dsn=" + SENTRY_MOCK_DSN,
+        "jwt.secret=YourSuperSecretKeyThatShouldBeLongAndComplex",
+        "jwt.expiration=80000000",
         "env=test",
         "server.port=" + this.getServerPort(),
         "aws.eventBridge.bus=dummy",

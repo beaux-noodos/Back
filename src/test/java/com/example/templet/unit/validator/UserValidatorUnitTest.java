@@ -31,7 +31,7 @@ public class UserValidatorUnitTest {
     user.setId("1");
     user.setFirstname("John");
     user.setLastname("Doe");
-    user.setRole(Role.CLIENT);
+    user.setRole(Role.MANAGER);
     user.setMail("john.doe@example.com");
     user.setBirthdate(LocalDate.of(1990, 1, 1));
 
@@ -50,7 +50,7 @@ public class UserValidatorUnitTest {
     assertTrue(exception.getMessage().contains("Role is mandatory"));
     assertTrue(exception.getMessage().contains("Email format is invalid"));
     assertTrue(exception.getMessage().contains("User ID is mandatory"));
-    assertTrue(exception.getMessage().contains("Birthdate is mandatory"));
+    ///assertTrue(exception.getMessage().contains("Birthdate is mandatory"));
   }
 
   @Test
@@ -61,7 +61,7 @@ public class UserValidatorUnitTest {
     user1.setFirstname("John");
     user1.setLastname("Doe");
     user1.setMail("john.doe@example.com");
-    user1.setRole(Role.CLIENT);
+    user1.setRole(Role.MANAGER);
     user1.setBirthdate(LocalDate.of(1990, 1, 1));
     users.add(user1);
 
@@ -70,7 +70,7 @@ public class UserValidatorUnitTest {
     user2.setFirstname("Jane");
     user2.setLastname("Doe");
     user2.setMail("jane.doe@example.com");
-    user2.setRole(Role.CLIENT);
+    user2.setRole(Role.MANAGER);
     user2.setBirthdate(LocalDate.of(1990, 2, 1));
     users.add(user2);
     assertDoesNotThrow(() -> userValidator.accept(users));

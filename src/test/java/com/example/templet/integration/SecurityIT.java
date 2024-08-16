@@ -63,7 +63,7 @@ public class SecurityIT {
             new AuthenticationPayload()
                 .email(client1().getEmail())
                 .password(CLIENT1_PASSWORD)
-                .providerId(null));
+                );
 
     assertNotNull(actual);
     assertEquals(CLIENT1_ID, (actual.getUser()).getId());
@@ -81,7 +81,7 @@ public class SecurityIT {
             ApiException.class,
             () ->
                 api.signIn(
-                    new AuthenticationPayload().email("dump").password("dump").providerId(null)));
+                    new AuthenticationPayload().email("dump").password("dump")));
     assertEquals(
         "{\"type\":\"BadRequestException\",\"message\":\"Password or email is wrong\"}",
         exception1.getResponseBody());
