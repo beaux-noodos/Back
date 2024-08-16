@@ -12,17 +12,17 @@ public class ChatUtils {
   }
 
   public static String getPropsForTakeTheme() {
-    String themList = "";
+    String themeList = "";
     for (ChatTheme c : ChatTheme.values())
-      themList = themList + "\"" + c.name() + c.name() + "\" ; ";
+      themeList = themeList + "\"" + c.name() + c.name() + "\" ; ";
 
     String value =
-        "Voici une lisete de theme que tu connai et ne peus ni modifier ni ajouter : "
-            + themList
-            + "pour chacune de ces thme ton role est de regarder si il y a une relation avec "
-            + "les besoint du dumande du clien, meme just un peut. "
-            + "pour chaque theme que tu trouve avoir une petite relation : "
-            + "tu me renvoi exactiement la liste de ces themes sans les modifier. ";
+      "Voici une liste de thèmes que tu connais et que tu ne peux ni modifier ni ajouter : "
+          + themeList
+          + ". Pour chacun de ces thèmes, ton rôle est de vérifier s'il y a un lien,"
+          + " même ténu, avec les besoins du client. "
+          + "Pour chaque thème que tu trouves pertinent, tu me renverras exactement cette liste de thèmes,"
+          + " sans aucune modification."
     return value;
   }
 
@@ -45,21 +45,24 @@ public class ChatUtils {
   }
 
   public static String generateAapliationdefinition() {
-    String giveAtualData = "en ce moment vous pouver voir ici les renseignement atuelle : \n";
-    return "Nous some une application de d'apprentissage sui permer à n'iporte qui de pouvoir "
-        + "enseigner et aussi de permetre à n'iporte qui de pouvoir appendre ce qu'ils veulent. "
-        + "pour touver les ours qui pourai interesser une personne, ils pouront etre assister par "
-        + "un chat inteigencce artifiiel qu'il peux demadr oe renseignement et aussi un "
-        + "unteligence artificiele qui vous suggera des enseigneent qui pouron vous interesser"
+    String giveActualData = "en ce moment vous pouvez voir ici les renseignements actuelle : \n";
+    return "Notre plateforme permet aux investisseurs de trouver des projets à financer"
+        + "et aux particuliers de trouver des solutions techniques ou des financements"
+        + "pour leurs projets. Elle offre la possibilité aux particuliers de"
+        + "rechercher des solutions techniques ou des investisseurs en fonction"
+        + "de leurs préférences, ou de bénéficier d'un accompagnement personnalisé "
+        + "grâce à 3 intelligence artificielle: une IA pour generer des"
+        + "suggestions,une IA pour faciliter la rechrche des projets dans la"
+        + "base de donnee, une IA pour generer des solutions techniques"
         + "\n"
-        + giveAtualData;
+        + giveActualData;
   }
 
   public static String askChat() {
-    return "Voilà ce qui nous concerne. Ce que je te demande est de prendre en compte ces"
-        + " informations et de répondre aux questions des clients que je te donne. (remarque"
-        + " : si la question n'a vraiment rien à voir avec les inforation que j'ai donner,"
-        + " repend polient que l'on ne t'as pas entrainer à repondre a ces question."
-        + " Surtout, tu n'es apsolument pas autoriser à ajouter ou modifier des information";
+    return "Voici les informations à prendre en compte. Réponds aux"
+        +"questions des clients en t'appuyant sur ces données."
+        +"Si une question ne concerne pas ces informations, réponds poliment que"
+        +"tu n'as pas été programmé pour y répondre. Surtout,"
+        +"tu n'es absolument pas autoriser à ajouter ou modifier des informations."
   }
 }
