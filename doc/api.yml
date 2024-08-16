@@ -160,6 +160,88 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  "/users/{id}/technical-solution/{tsid}/chat":
+    get:
+      tags:
+        - Chatbot
+      summary: Obtain information from the chatbot.
+      operationId: getChatbotTechnicalInformation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tsid
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: prompt
+          in: query
+          required: true
+          description: The question to ask the chatbot about.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The response given by the chatbot.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatResponse"
+        "400":
+          $ref: "#/components/responses/400"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/429"
+        "500":
+          $ref: "#/components/responses/500"
+
+  "/technical-solution/{tsid}/prompt":
+    put:
+      tags:
+        - Chatbot
+      summary: Add information from in chatbot.
+      operationId: putChatbotTechnicalInformation
+      parameters:
+        - name: tsid
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: User to crupdate.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Prompt"
+      responses:
+        "200":
+          description: Prompt modify.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Prompt"
+        "400":
+          $ref: "#/components/responses/400"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/429"
+        "500":
+          $ref: "#/components/responses/500"
+
   ## Users resources
   "/users":
     get:
@@ -337,43 +419,10 @@ paths:
           $ref: '#/components/responses/500'
 
 
-  /users/{id}/interested/courses:
-    get:
-      summary: "Récupérer les cours marqués comme intéressants par l'utilisateur"
-      operationId: "getUserInterestedCourses"
-      tags:
-        - User
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-          description: "ID de l'utilisateur"
-      responses:
-        '200':
-          description: "Liste des cours marqués comme intéressants"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Course'
-        '400':
-          $ref: "#/components/responses/400"
-        '403':
-          $ref: "#/components/responses/403"
-        '404':
-          $ref: "#/components/responses/404"
-        '429':
-          $ref: "#/components/responses/429"
-        '500':
-          $ref: "#/components/responses/500"
-
-  /users/{id}/subscribe/courses:
+  "/users/{id}/projects/{pid}/subscribe":
     get:
       summary: "Récupérer les cours suivis par l'utilisateur"
-      operationId: "getUserSubscribedCourses"
+      operationId: "getUserSubscribedProjects"
       tags:
         - User
       parameters:
@@ -383,6 +432,12 @@ paths:
           schema:
             type: string
           description: "ID de l'utilisateur"
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: string
+          description: "ID de l'projects"
       responses:
         '200':
           description: "Liste des cours suivis"
@@ -391,7 +446,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Course'
+                  $ref: '#/components/schemas/Project'
         '400':
           $ref: "#/components/responses/400"
         '403':
@@ -403,7 +458,7 @@ paths:
         '500':
           $ref: "#/components/responses/500"
 
-  /users/{id}/notification:
+  "/users/{id}/notification":
     get:
       summary: "Récupérer les notifications de l'utilisateur"
       operationId: "getUserNotifications"
@@ -436,28 +491,13 @@ paths:
         '500':
           $ref: "#/components/responses/500"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  ## Courseing resources
-  "/courses":
+  ## Projecting resources
+  "/projects":
     get:
       tags:
-        - Courseing
-      summary: Get all courses.
-      operationId: getCourses
+        - Projecting
+      summary: Get all projects.
+      operationId: getProjects
       parameters:
         - name: page
           in: query
@@ -476,13 +516,13 @@ paths:
             type: boolean
       responses:
         "200":
-          description: List of courses that meet the criteria.
+          description: List of projects that meet the criteria.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Course"
+                  $ref: "#/components/schemas/Project"
         "400":
           $ref: "#/components/responses/400"
         "403":
@@ -494,12 +534,12 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  "/courses/{pid}":
+  "/projects/{pid}":
     get:
       tags:
-        - Courseing
-      summary: Get course by identifier.
-      operationId: getCourseById
+        - Projecting
+      summary: Get project by identifier.
+      operationId: getProjectById
       parameters:
         - name: pid
           in: path
@@ -508,11 +548,11 @@ paths:
             type: string
       responses:
         "200":
-          description: The identified course.
+          description: The identified project.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Course"
+                $ref: "#/components/schemas/Project"
         "400":
           $ref: "#/components/responses/400"
         "403":
@@ -525,9 +565,9 @@ paths:
           $ref: "#/components/responses/500"
     put:
       tags:
-        - Courseing
-      summary: Crupdate course by identifier.
-      operationId: crupdateCourseById
+        - Projecting
+      summary: Crupdate project by identifier.
+      operationId: crupdateProjectById
       parameters:
         - name: pid
           in: path
@@ -535,47 +575,19 @@ paths:
           schema:
             type: string
       requestBody:
-        description: Course to crupdate
+        description: Project to crupdate
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Course"
+              $ref: "#/components/schemas/Project"
       responses:
         "201":
-          description: The crupdated course.
+          description: The crupdated project.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Course"
-        "400":
-          $ref: "#/components/responses/400"
-        "403":
-          $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
-        "429":
-          $ref: "#/components/responses/429"
-        "500":
-          $ref: "#/components/responses/500"
-    delete:
-      tags:
-        - Courseing
-      summary: Delete course by identifier.
-      operationId: deleteCourseById
-      parameters:
-        - name: pid
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: The deleted course.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Course"
+                $ref: "#/components/schemas/Project"
         "400":
           $ref: "#/components/responses/400"
         "403":
@@ -587,12 +599,12 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  "/users/{uid}/courses/{xid}/react":
+  "/users/{uid}/projects/{xid}/react":
     put:
       tags:
-        - Courseing
-      summary: Reacte an courses.
-      operationId: crupdateReactionCourses
+        - Projecting
+      summary: Reacte an projects.
+      operationId: crupdateReactionProjects
       parameters:
         - name: uid
           in: path
@@ -613,7 +625,7 @@ paths:
               $ref: "#/components/schemas/Reaction"
       responses:
         "200":
-          description: List of courses that meet the criteria.
+          description: List of projects that meet the criteria.
           content:
             application/json:
               schema:
@@ -629,12 +641,12 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  "/courses/{xid}/react":
+  "/projects/{xid}/react":
     get:
       tags:
-        - Courseing
-      summary: Get all ReactionCourses.
-      operationId: getReactionCourses
+        - Projecting
+      summary: Get all ReactionProjects.
+      operationId: getReactionProjects
       parameters:
         - name: xid
           in: path
@@ -678,7 +690,7 @@ paths:
             $ref: "#/components/schemas/PageSize"
       responses:
         "200":
-          description: List of courses that meet the criteria.
+          description: List of projects that meet the criteria.
           content:
             application/json:
               schema:
@@ -696,14 +708,12 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-
-
-  "/courses/{xid}/pictures":
+  "/projects/{xid}/pictures":
     put:
       tags:
-        - Courseing
-      summary: Submit course picture
-      operationId: putCoursePicture
+        - Projecting
+      summary: Submit project picture
+      operationId: putProjectPicture
       parameters:
         - name: xid
           in: path
@@ -719,11 +729,11 @@ paths:
               format: binary
       responses:
         '200':
-          description: Course with picture added.
+          description: Project with picture added.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Course'
+                $ref: '#/components/schemas/Project'
         '400':
           $ref: '#/components/responses/400'
         '403':
@@ -735,116 +745,13 @@ paths:
         '500':
           $ref: '#/components/responses/500'
 
-  /users/{id}/courses/{cid}/signalisation:
-    post:
-      summary: "Signaler un cours suspect"
-      operationId: "postCourseSignalisation"
-      tags:
-        - Courseing
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-          description: "ID de l'utilisateur"
-        - in: path
-          name: cid
-          required: true
-          schema:
-            type: string
-          description: "ID du cours"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Signalisation'
-      responses:
-        '201':
-          description: "Signalisation créée avec succès"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Signalisation'
-        '400':
-          $ref: "#/components/responses/400"
-        '403':
-          $ref: "#/components/responses/403"
-        '404':
-          $ref: "#/components/responses/404"
-        '429':
-          $ref: "#/components/responses/429"
-        '500':
-          $ref: "#/components/responses/500"
-
-  /users/{id}/courses/{cid}/follow/{follow_action}:
-    put:
-      summary: "Mettre à jour l'état de suivi ou d'intérêt d'un cours pour l'utilisateur"
-      operationId: "putUserCourseFollow"
-      tags:
-        - Courseing
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-          description: "ID de l'utilisateur"
-        - in: path
-          name: cid
-          required: true
-          schema:
-            type: string
-          description: "ID du cours"
-        - in: path
-          name: follow_action
-          required: true
-          schema:
-            $ref: "#/components/schemas/ActionEnum"
-          description: "Action à effectuer sur le cours"
-      responses:
-        '200':
-          description: "État du cours mis à jour"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Course'
-        '400':
-          $ref: "#/components/responses/400"
-        '403':
-          $ref: "#/components/responses/403"
-        '404':
-          $ref: "#/components/responses/404"
-        '429':
-          $ref: "#/components/responses/429"
-        '500':
-          $ref: "#/components/responses/500"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  ## CourseSessioning resources
-  "/users/{id}/course-sessions":
+  ## ProjectSessioning resources
+  "/users/{id}/project-sessions":
     get:
       tags:
-        - CourseSessioning
-      summary: Get all courseSessions.
-      operationId: getUserCourseSessions
+        - ProjectSessioning
+      summary: Get all projectSessions.
+      operationId: getUserProjectSessions
       parameters:
         - in: path
           name: id
@@ -864,13 +771,13 @@ paths:
             $ref: "#/components/schemas/PageSize"
       responses:
         "200":
-          description: List of courseSessions that meet the criteria.
+          description: List of projectSessions that meet the criteria.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/CourseSession"
+                  $ref: "#/components/schemas/ProjectSession"
         "400":
           $ref: "#/components/responses/400"
         "403":
@@ -882,12 +789,12 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  "/courses/{xid}/course-sessions":
+  "/projects/{xid}/project-sessions":
     get:
       tags:
-        - CourseSessioning
-      summary: Get all courseSessions.
-      operationId: getCourseSessions
+        - ProjectSessioning
+      summary: Get all projectSessions.
+      operationId: getProjectSessions
       parameters:
         - in: path
           name: xid
@@ -912,13 +819,13 @@ paths:
             type: boolean
       responses:
         "200":
-          description: List of courseSessions that meet the criteria.
+          description: List of projectSessions that meet the criteria.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/CourseSession"
+                  $ref: "#/components/schemas/ProjectSession"
         "400":
           $ref: "#/components/responses/400"
         "403":
@@ -930,12 +837,12 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  "/courses/{xid}/course-sessions/{pid}":
+  "/projects/{xid}/project-sessions/{pid}":
     get:
       tags:
-        - CourseSessioning
-      summary: Get courseSession by identifier.
-      operationId: getCourseSessionById
+        - ProjectSessioning
+      summary: Get projectSession by identifier.
+      operationId: getProjectSessionById
       parameters:
         - in: path
           name: xid
@@ -950,11 +857,11 @@ paths:
             type: string
       responses:
         "200":
-          description: The identified courseSession.
+          description: The identified projectSession.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CourseSession"
+                $ref: "#/components/schemas/ProjectSession"
         "400":
           $ref: "#/components/responses/400"
         "403":
@@ -967,9 +874,9 @@ paths:
           $ref: "#/components/responses/500"
     put:
       tags:
-        - CourseSessioning
-      summary: Crupdate courseSession by identifier.
-      operationId: crupdateCourseSessionById
+        - ProjectSessioning
+      summary: Crupdate projectSession by identifier.
+      operationId: crupdateProjectSessionById
       parameters:
         - in: path
           name: xid
@@ -983,205 +890,19 @@ paths:
           schema:
             type: string
       requestBody:
-        description: CourseSession to crupdate
+        description: ProjectSession to crupdate
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CourseSession"
+              $ref: "#/components/schemas/ProjectSession"
       responses:
         "201":
-          description: The crupdated courseSession.
+          description: The crupdated projectSession.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CourseSession"
-        "400":
-          $ref: "#/components/responses/400"
-        "403":
-          $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
-        "429":
-          $ref: "#/components/responses/429"
-        "500":
-          $ref: "#/components/responses/500"
-    delete:
-      tags:
-        - CourseSessioning
-      summary: Delete courseSession by identifier.
-      operationId: deleteCourseSessionById
-      parameters:
-        - in: path
-          name: xid
-          required: true
-          schema:
-            type: string
-          description: "ID du cours"
-        - name: pid
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: The deleted courseSession.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CourseSession"
-        "400":
-          $ref: "#/components/responses/400"
-        "403":
-          $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
-        "429":
-          $ref: "#/components/responses/429"
-        "500":
-          $ref: "#/components/responses/500"
-
-
-  "/Users/{id}/courseSession/{courseSession_id}/pdf":
-    get:
-      tags:
-        - CourseSessioning
-      summary: Get pdf of a specific courseSession.
-      operationId: getCourseSessionPdf
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: courseSession_id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: CourseSession Pdf
-          content:
-            application/pdf:
-              schema:
-                type: string
-                format: binary
-                example: PDF VERSION
-
-        '400':
-          $ref: '#/components/responses/400'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-        '429':
-          $ref: '#/components/responses/429'
-        '500':
-          $ref: '#/components/responses/500'
-
-  "/users/{uid}/courses/{xid}/course-sessions/{pid}/react":
-    put:
-      tags:
-        - CourseSessioning
-      summary: Reacte an courseSessions.
-      operationId: crupdateReactionCourseSessions
-      parameters:
-        - name: uid
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: xid
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: pid
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Reaction to crupdate
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Reaction"
-      responses:
-        "200":
-          description: List of courseSessions that meet the criteria.
-          content:
-            apeyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0K3Zhbm9AaGVpLnNjaG9vbCIsImlhdCI6MTcyMjg5NTY3MCwiZXhwIjoxNzIzNDk1NjcwfQ.va9FHIb7juP5Qzg9PfvxHc4cvvEWKsmDQN9QexBT30Mplication/json:
-              schema:
-                $ref: "#/components/schemas/Reaction"
-        "400":
-          $ref: "#/components/responses/400"
-        "403":
-          $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
-        "429":
-          $ref: "#/components/responses/429"
-        "500":
-          $ref: "#/components/responses/500"
-  "/courses/{xid}/course-sessions/{pid}/react":
-    get:
-      tags:
-        - CourseSessioning
-      summary: Get all ReactionCourseSessions.
-      operationId: getReactionCourseSessions
-      parameters:
-        - name: xid
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: pid
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: have_like_reaction
-          in: query
-          required: false
-          schema:
-            type: boolean
-        - name: have_vision
-          in: query
-          required: false
-          schema:
-            type: boolean
-        - name: have_stars_number
-          in: query
-          required: false
-          schema:
-            type: boolean
-        - name: have_comment
-          in: query
-          required: false
-          schema:
-            type: boolean
-        - name: page
-          in: query
-          required: false
-          schema:
-            $ref: "#/components/schemas/Page"
-        - name: page_size
-          in: query
-          required: false
-          schema:
-            $ref: "#/components/schemas/PageSize"
-      responses:
-        "200":
-          description: List of courseSessions that meet the criteria.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Reaction"
+                $ref: "#/components/schemas/ProjectSession"
         "400":
           $ref: "#/components/responses/400"
         "403":
@@ -1300,34 +1021,6 @@ paths:
           $ref: "#/components/responses/429"
         "500":
           $ref: "#/components/responses/500"
-    delete:
-      tags:
-        - Locationing
-      summary: Delete location by identifier.
-      operationId: deleteLocationById
-      parameters:
-        - name: pid
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: The deleted location.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Location"
-        "400":
-          $ref: "#/components/responses/400"
-        "403":
-          $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
-        "429":
-          $ref: "#/components/responses/429"
-        "500":
-          $ref: "#/components/responses/500"
 
 components:
   securitySchemes:
@@ -1379,7 +1072,9 @@ components:
     Role:
       type: string
       enum:
-        - CLIENT
+        - TECHNICAL_SOLUTION
+        - PROJECT_OWNER
+        - INVESTOR
         - MANAGER
     Sex:
       type: string
@@ -1398,23 +1093,31 @@ components:
         - ENABLED
         - BANISHED
 
-    ActionEnum:
-      type: string
-      enum:
-        - FOLLOW
-        - INTERESTED
-        - UNFOLLOW
-        - UNINTERESTED
-
     StatusEnum:
       type: string
       enum:
-        - planning
-        - confirmed
-        - in_progress
-        - completed
+        - PLANNING
+        - CONFIRMED
+        - COMPLETED
+
+    StatusSessionEnum:
+      type: string
+      enum:
+        - NOT_STARTING
+        - IN_PROGRESS
+        - COMPLETED
 
         ## resource model
+
+    HaveCreationAndUpdate:
+      properties:
+        creation_datetime:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
     ReactionsProperties:
       properties:
         like_number:
@@ -1432,19 +1135,14 @@ components:
         picture_is_implemented:
           type: boolean
 
-    Course:
+    Project:
       allOf:
         - $ref: "#/components/schemas/ReactionsProperties"
         - $ref: "#/components/schemas/HaveImageProperties"
+        - $ref: "#/components/schemas/HaveCreationAndUpdate"
       properties:
         id:
           type: string
-        creation_datetime:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
         user:
           $ref: "#/components/schemas/User"
         title:
@@ -1454,37 +1152,40 @@ components:
         categories:
           type: array
           items:
-            $ref: "#/components/schemas/CourseCategory"
-        followers:
-          type: array
-          items:
-            $ref: "#/components/schemas/User"
-        interested_users:
-          type: array
-          items:
-            $ref: "#/components/schemas/User"
+            $ref: "#/components/schemas/ProjectCategory"
+        investor:
+          $ref: "#/components/schemas/User"
+        technicalSolution:
+          $ref: "#/components/schemas/User"
         sessions:
           type: array
           items:
-            $ref: "#/components/schemas/CourseSession"
+            $ref: "#/components/schemas/ProjectSession"
         status:
           $ref: "#/components/schemas/StatusEnum"
         price:
           type: number
           format: float
-
-
+        localisation:
+          $ref: "#/components/schemas/Location"
+        start_datetime:
+          type: string
+          format: date-time
+        end_datetime:
+          type: string
+          format: date-time
+        need_investor:
+          type: boolean
+        need_technical_solution:
+          type: boolean
 
     Notification:
+      allOf:
+        - $ref: "#/components/schemas/HaveCreationAndUpdate"
+
       properties:
         id:
           type: string
-        creation_datetime:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
         user:
           $ref: "#/components/schemas/User"
         title:
@@ -1494,46 +1195,34 @@ components:
         isRead:
           type: boolean
 
-    CourseSession:
+    ProjectSession:
       allOf:
         - $ref: "#/components/schemas/ReactionsProperties"
+        - $ref: "#/components/schemas/HaveCreationAndUpdate"
       properties:
         id:
           type: string
-        creation_datetime:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        course:
-          $ref: "#/components/schemas/Course"
+        project:
+          $ref: "#/components/schemas/Project"
         location:
           $ref: "#/components/schemas/Location"
-        professor:
-          $ref: "#/components/schemas/User"
+        status:
+          $ref: "#/components/schemas/StatusSessionEnum"
         title:
           type: string
         description:
           type: string
-        start_datetime:
-          type: string
-          format: date-time
         end_datetime:
           type: string
           format: date-time
 
 
     Location:
+      allOf:
+        - $ref: "#/components/schemas/HaveCreationAndUpdate"
       properties:
         id:
           type: string
-        creation_datetime:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
         name:
           type: string
         description:
@@ -1543,7 +1232,30 @@ components:
         longitude:
           type: string
 
+    Prompt:
+      allOf:
+        - $ref: "#/components/schemas/HaveCreationAndUpdate"
+      properties:
+        id:
+          type: string
+        prompt_category:
+          type: string
+        body:
+          type: string
+
+
     ChatResponse:
+      allOf:
+        - $ref: "#/components/schemas/HaveCreationAndUpdate"
+      properties:
+        id:
+          type: string
+        prompts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Prompt"
+
+    ChatModel:
       properties:
         creation_datetime:
           type: string
@@ -1552,17 +1264,13 @@ components:
           type: string
 
     Reaction:
+      allOf:
+        - $ref: "#/components/schemas/HaveCreationAndUpdate"
       properties:
         id:
           type: string
         likeReaction:
           $ref: "#/components/schemas/ReactionType"
-        creation_datetime:
-          type: string
-          format: date-time
-        last_update_datetime:
-          type: string
-          format: date-time
         user_id:
           type: string
         subject_id:
@@ -1614,10 +1322,10 @@ components:
         url:
           type: string
     UserPictureType:
-        type: string
-        enum:
-         - BANNER
-         - PROFILE
+      type: string
+      enum:
+        - BANNER
+        - PROFILE
     AuthenticationPayload:
       properties:
         email:
@@ -1639,16 +1347,11 @@ components:
           type: string
 
     Signalisation:
-      type: object
+      allOf:
+        - $ref: "#/components/schemas/HaveCreationAndUpdate"
       properties:
         id:
           type: string
-        creation_datetime:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
         user:
           $ref: "#/components/schemas/User"
         reason:
@@ -1658,7 +1361,7 @@ components:
           type: string
           description: "Détails supplémentaires concernant la signalisation"
 
-    CourseCategory:
+    ProjectCategory:
       type: object
       properties:
         name:
