@@ -31,128 +31,90 @@ VALUES
 
 
 
--- Insertion de données pour la table dummy
-INSERT INTO dummy (id) VALUES ('dummy-table-id-1'), ('dummy-table-id-2'), ('dummy-table-id-3');
-
--- Insertion de données pour la table dummy_uuid
-INSERT INTO dummy_uuid (id) VALUES ('dummy-uuid-id-1'), ('dummy-uuid-id-2'), ('dummy-uuid-id-3');
-
--- Insertion de données pour la table user
+-- Insérer des données dans la table "user"
 INSERT INTO "user" (id, firstname, lastname, mail, birthdate, role, sex, creation_datetime, last_update_datetime, photo_key, photo_banner_key, username, status)
 VALUES
-   (UUID_GENERATE_V4(), 'John', 'Doe', 'john.doe@example.com', '1985-06-15', 'CLIENT', 'M', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'photo1.jpg', 'banner1.jpg', 'johndoe', 'ENABLED'),
-    (UUID_GENERATE_V4(), 'Jane', 'Smith', 'jane.smith@example.com', '1990-08-20', 'MANAGER', 'F', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'photo2.jpg', 'banner2.jpg', 'janesmith', 'ENABLED'),
-    (UUID_GENERATE_V4(), 'Alice', 'Johnson', 'alice.johnson@example.com', '1995-12-10', 'CLIENT', 'F', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'photo3.jpg', 'banner3.jpg', 'alicejohnson', 'BANISHED');
+    (UUID_GENERATE_V4(), 'John', 'Doe', 'john.doe@example.com', '1985-01-01', 'MANAGER', 'M', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'photo_john_key', 'banner_john_key', 'johndoe', 'ENABLED'),
+    (UUID_GENERATE_V4(), 'Jane', 'Smith', 'jane.smith@example.com', '1990-02-02', 'INVESTOR', 'F', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'photo_jane_key', 'banner_jane_key', 'janesmith', 'ENABLED'),
+    (UUID_GENERATE_V4(), 'Alice', 'Wonder', 'alice.wonder@example.com', '1987-03-03', 'TECHNICAL_SOLUTION', 'F', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'photo_alice_key', 'banner_alice_key', 'alicewonder', 'ENABLED'),
+    (UUID_GENERATE_V4(), 'Bob', 'Builder', 'bob.builder@example.com', '1982-04-04', 'PROJECT_OWNER', 'M', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'photo_bob_key', 'banner_bob_key', 'bobbuilder', 'ENABLED');
 
--- Insertion de données pour la table user_auth
+-- Insérer des données dans la table "user_auth"
 INSERT INTO "user_auth" (id, user_id, password)
 VALUES
     (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), 'password123'),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'), 'password456'),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'alice.johnson@example.com'), 'password789');
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'), 'securepassword'),
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'alice.wonder@example.com'), 'alicepassword'),
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'bob.builder@example.com'), 'builderpassword');
 
--- Insertion de données pour la table location
-INSERT INTO location (id, creation_datetime, last_update_datetime, like_number, dislike_number, view_number, star_number, star_medium, name, description, latitude, longitude)
+-- Insérer des données dans la table "location"
+INSERT INTO location (id, name, description, latitude, longitude)
 VALUES
-    (UUID_GENERATE_V4(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10, 2, 100, 5, 4.5, 'Location 1', 'Description of Location 1', '48.8566', '2.3522'),
-   (UUID_GENERATE_V4(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 20, 5, 200, 10, 4.8, 'Location 2', 'Description of Location 2', '34.0522', '-118.2437'),
-    (UUID_GENERATE_V4(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 15, 3, 150, 8, 4.7, 'Location 3', 'Description of Location 3', '51.5074', '-0.1278');
+    (UUID_GENERATE_V4(), 'Antananarivo', 'Capital city of Madagascar', '-18.8792', '47.5079'),
+    (UUID_GENERATE_V4(), 'Toamasina', 'Major port city in Madagascar', '-18.1492', '49.4022');
 
--- Insertion de données pour la table location_reaction
-INSERT INTO location_reaction (id, user_id, creation_datetime, last_update_datetime, like_reaction, vision, stars_number, comment, location_id)
+-- Insérer des données dans la table "project_category"
+INSERT INTO project_category (id, name, description)
 VALUES
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'LIKE', TRUE, 5, 'Great place!', (SELECT id FROM location WHERE name = 'Location 1')),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'DISLIKE', FALSE, 2, 'Not what I expected.', (SELECT id FROM location WHERE name = 'Location 2')),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'alice.johnson@example.com'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'LIKE', TRUE, 4, 'Pretty nice.', (SELECT id FROM location WHERE name = 'Location 3'));
+    (UUID_GENERATE_V4(), 'Software Development', 'Projects related to software development'),
+    (UUID_GENERATE_V4(), 'Infrastructure', 'Projects related to building infrastructure');
 
--- Insertion de données pour la table project_category
-INSERT INTO project_category (id, creation_datetime, last_update_datetime, name, description)
+-- Insérer des données dans la table "project"
+INSERT INTO project (id, user_id, title, description, project_status, image_key, price, investor_id, technical_solution_id, localisation_id, investor_need, technical_solution_need, start_datetime, end_datetime, picture_is_implemented)
 VALUES
-    (UUID_GENERATE_V4(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Category 1', 'Description for Category 1'),
-    (UUID_GENERATE_V4(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Category 2', 'Description for Category 2'),
-    (UUID_GENERATE_V4(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Category 3', 'Description for Category 3');
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), 'E-commerce Platform', 'Building a scalable e-commerce platform.', 'IN_PROGRESS', 'ecommerce_image_key', 50000.00, (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'), (SELECT id FROM "user" WHERE mail = 'alice.wonder@example.com'), (SELECT id FROM location WHERE name = 'Antananarivo'), TRUE, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + interval '30 days', TRUE),
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'bob.builder@example.com'), 'Road Construction', 'Constructing a new highway.', 'PLANNING', 'road_image_key', 2000000.00, NULL, (SELECT id FROM "user" WHERE mail = 'alice.wonder@example.com'), (SELECT id FROM location WHERE name = 'Toamasina'), TRUE, TRUE, CURRENT_TIMESTAMP + interval '10 days', CURRENT_TIMESTAMP + interval '90 days', FALSE);
 
--- Insertion de données pour la table project
-INSERT INTO project (id, creation_datetime, last_update_datetime, user_id, like_number, dislike_number, view_number, star_number, star_medium, title, description, project_status, image_key, price)
+-- Insérer des données dans la table "project_reaction"
+INSERT INTO project_reaction (id, user_id, like_reaction, vision, stars_number, comment, project_id)
 VALUES
-    (UUID_GENERATE_V4(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), 30, 5, 300, 20, 4.6, 'Project 1', 'Description of Project 1', 'PLANNING', 'image1.jpg', 100.0),
-    (UUID_GENERATE_V4(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'), 40, 2, 400, 25, 4.9, 'Project 2', 'Description of Project 2', 'IN_PROGRESS', 'image2.jpg', 200.0),
-    (UUID_GENERATE_V4(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM "user" WHERE mail = 'alice.johnson@example.com'), 50, 3, 500, 30, 5.0, 'Project 3', 'Description of Project 3', 'COMPLETED', 'image3.jpg', 300.0);
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), 'LIKE', TRUE, 5, 'Great project!', (SELECT id FROM project WHERE title = 'E-commerce Platform')),
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'), 'DISLIKE', FALSE, 2, 'Not convinced.', (SELECT id FROM project WHERE title = 'Road Construction'));
 
--- Insertion de données pour la table project_reaction
-INSERT INTO project_reaction (id, user_id, creation_datetime, last_update_datetime, like_reaction, vision, stars_number, comment, project_id)
+-- Insérer des données dans la table "project_session"
+INSERT INTO project_session (id, project_id, location_id, title, description, end_datetime)
 VALUES
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'LIKE', TRUE, 5, 'Excellent project!', (SELECT id FROM project WHERE title = 'Project 1')),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'DISLIKE', FALSE, 2, 'Not satisfied.', (SELECT id FROM project WHERE title = 'Project 2')),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'alice.johnson@example.com'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'LIKE', TRUE, 4, 'Very informative.', (SELECT id FROM project WHERE title = 'Project 3'));
+    (UUID_GENERATE_V4(), (SELECT id FROM project WHERE title = 'E-commerce Platform'), (SELECT id FROM location WHERE name = 'Antananarivo'), 'Development Sprint 1', 'First sprint for development.', CURRENT_TIMESTAMP + interval '15 days'),
+    (UUID_GENERATE_V4(), (SELECT id FROM project WHERE title = 'Road Construction'), (SELECT id FROM location WHERE name = 'Toamasina'), 'Initial Survey', 'Surveying the construction site.', CURRENT_TIMESTAMP + interval '20 days');
 
--- Insertion de données pour la table project_followers
-INSERT INTO project_followers (project_id, user_id)
+-- Insérer des données dans la table "project_session_reaction"
+INSERT INTO project_session_reaction (id, user_id, like_reaction, vision, stars_number, comment, project_session_id)
 VALUES
-    ((SELECT id FROM project WHERE title = 'Project 1'), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com')),
-    ((SELECT id FROM project WHERE title = 'Project 2'), (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com')),
-    ((SELECT id FROM project WHERE title = 'Project 3'), (SELECT id FROM "user" WHERE mail = 'alice.johnson@example.com'));
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'alice.wonder@example.com'), 'LIKE', TRUE, 4, 'Good progress on the project.', (SELECT id FROM project_session WHERE title = 'Development Sprint 1')),
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), 'DISLIKE', FALSE, 1, 'Too slow.', (SELECT id FROM project_session WHERE title = 'Initial Survey'));
 
--- Insertion de données pour la table project_interested
-INSERT INTO project_interested (project_id, user_id)
-VALUES
-    ((SELECT id FROM project WHERE title = 'Project 1'), (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com')),
-    ((SELECT id FROM project WHERE title = 'Project 2'), (SELECT id FROM "user" WHERE mail = 'alice.johnson@example.com')),
-    ((SELECT id FROM project WHERE title = 'Project 3'), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'));
-
--- Insertion de données pour la table project_session
-INSERT INTO project_session (id, creation_datetime, last_update_datetime, project_id, location_id, like_number, dislike_number, view_number, star_number, star_medium, professor_id, title, description, start_datetime, end_datetime)
-VALUES
-    (UUID_GENERATE_V4(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM project WHERE title = 'Project 1'), (SELECT id FROM location WHERE name = 'Location 1'), 100, 10, 1000, 50, 4.8, (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), 'Session 1', 'Description of Session 1', CURRENT_TIMESTAMP + INTERVAL '7 days', CURRENT_TIMESTAMP + INTERVAL '14 days'),
-    (UUID_GENERATE_V4(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM project WHERE title = 'Project 2'), (SELECT id FROM location WHERE name = 'Location 2'), 200, 15, 2000, 70, 4.9, (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'), 'Session 2', 'Description of Session 2', CURRENT_TIMESTAMP + INTERVAL '10 days', CURRENT_TIMESTAMP + INTERVAL '20 days'),
-    (UUID_GENERATE_V4(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM project WHERE title = 'Project 3'), (SELECT id FROM location WHERE name = 'Location 3'), 150, 20, 1500, 60, 5.0, (SELECT id FROM "user" WHERE mail = 'alice.johnson@example.com'), 'Session 3', 'Description of Session 3', CURRENT_TIMESTAMP + INTERVAL '15 days', CURRENT_TIMESTAMP + INTERVAL '30 days');
-
--- Insertion de données pour la table project_session_reaction
-INSERT INTO project_session_reaction (id, user_id, creation_datetime, last_update_datetime, like_reaction, vision, stars_number, comment, project_session_id)
-VALUES
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'LIKE', TRUE, 5, 'Amazing session!', (SELECT id FROM project_session WHERE title = 'Session 1')),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'DISLIKE', FALSE, 3, 'Could be better.', (SELECT id FROM project_session WHERE title = 'Session 2')),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'alice.johnson@example.com'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'LIKE', TRUE, 4, 'Good session.', (SELECT id FROM project_session WHERE title = 'Session 3'));
-
--- Insertion de données pour la table project_project_category
+-- Insérer des données dans la table "project_project_category"
 INSERT INTO project_project_category (project_id, project_category_id)
 VALUES
-    ((SELECT id FROM project WHERE title = 'Project 1'), (SELECT id FROM project_category WHERE name = 'Category 1')),
-    ((SELECT id FROM project WHERE title = 'Project 2'), (SELECT id FROM project_category WHERE name = 'Category 2')),
-    ((SELECT id FROM project WHERE title = 'Project 3'), (SELECT id FROM project_category WHERE name = 'Category 3'));
+    ((SELECT id FROM project WHERE title = 'E-commerce Platform'), (SELECT id FROM project_category WHERE name = 'Software Development')),
+    ((SELECT id FROM project WHERE title = 'Road Construction'), (SELECT id FROM project_category WHERE name = 'Infrastructure'));
 
--- Insertion de données pour la table message_chat_format_entity
-INSERT INTO message_chat_format_entity (id, user_id, client_message, assistant_message, creation_datetime)
+-- Insérer des données dans la table "message_chat_format_entity"
+INSERT INTO message_chat_format_entity (id, user_id, client_message, assistant_message)
 VALUES
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), 'Hello, how can I assist you today?', 'Sure, I can help with that!', CURRENT_TIMESTAMP),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'), 'I need some information about your services.', 'Certainly, here are the details...', CURRENT_TIMESTAMP),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'alice.johnson@example.com'), 'Can you guide me through the process?', 'Of project, let me explain step by step.', CURRENT_TIMESTAMP);
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), 'Hello, can you assist me with my project?', 'Sure, what help do you need?'),
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'), 'What is the status of the road construction?', 'It is currently in the planning phase.');
 
--- Insertion de données pour la table signalisation
-INSERT INTO signalisation (id, creation_datetime, last_update_datetime, user_id)
+-- Insérer des données dans la table "signalisation"
+INSERT INTO signalisation (id, user_id)
 VALUES
-    (UUID_GENERATE_V4(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM "user" WHERE mail = 'john.doe@example.com')),
-    (UUID_GENERATE_V4(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com')),
-    (UUID_GENERATE_V4(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT id FROM "user" WHERE mail = 'alice.johnson@example.com'));
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'alice.wonder@example.com')),
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'bob.builder@example.com'));
 
--- Insertion de données pour la table signalisation_reaction
-INSERT INTO signalisation_reaction (id, user_id, creation_datetime, last_update_datetime, like_reaction, vision, stars_number, comment, signalisation_id)
+-- Insérer des données dans la table "signalisation_reaction"
+INSERT INTO signalisation_reaction (id, user_id, like_reaction, vision, stars_number, comment, signalisation_id)
 VALUES
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'LIKE', TRUE, 4, 'This needs attention.', (SELECT id FROM signalisation WHERE user_id = (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'))),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'DISLIKE', FALSE, 2, 'Not a big issue.', (SELECT id FROM signalisation WHERE user_id = (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'))),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'alice.johnson@example.com'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'LIKE', TRUE, 5, 'Urgent attention needed!', (SELECT id FROM signalisation WHERE user_id = (SELECT id FROM "user" WHERE mail = 'alice.johnson@example.com')));
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), 'LIKE', TRUE, 4, 'Well flagged.', (SELECT id FROM signalisation WHERE user_id = (SELECT id FROM "user" WHERE mail = 'alice.wonder@example.com'))),
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'), 'DISLIKE', FALSE, 1, 'Not helpful.', (SELECT id FROM signalisation WHERE user_id = (SELECT id FROM "user" WHERE mail = 'bob.builder@example.com')));
 
-
--- Insertion de données pour la table notification
-INSERT INTO notification (id, user_id, title, body, is_read, creation_datetime)
+-- Insérer des données dans la table "notification"
+INSERT INTO notification (id, user_id, title, body, is_read)
 VALUES
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), 'Notification 1', 'This is your first notification.', FALSE, CURRENT_TIMESTAMP),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'), 'Notification 2', 'This is your second notification.', TRUE, CURRENT_TIMESTAMP),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'alice.johnson@example.com'), 'Notification 3', 'This is your third notification.', FALSE, CURRENT_TIMESTAMP);
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'alice.wonder@example.com'), 'New Project Assigned', 'You have been assigned to a new project.', FALSE),
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'bob.builder@example.com'), 'Milestone Reached', 'Your project has reached its first milestone.', TRUE);
 
--- Insertion de données pour la table notification_reaction
-INSERT INTO notification_reaction (id, user_id, creation_datetime, last_update_datetime, like_reaction, vision, stars_number, comment, notification_id)
+
+-- Insérer des données dans la table "notification_reaction"
+INSERT INTO notification_reaction (id, user_id, like_reaction, vision, stars_number, comment, notification_id)
 VALUES
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'LIKE', TRUE, 5, 'Very helpful notification.', (SELECT id FROM notification WHERE title = 'Notification 1')),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'jane.smith@example.com'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'DISLIKE', FALSE, 2, 'Not relevant to me.', (SELECT id FROM notification WHERE title = 'Notification 2')),
-    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'alice.johnson@example.com'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'LIKE', TRUE, 4, 'Good to know.', (SELECT id FROM notification WHERE title = 'Notification 3'));
+    (UUID_GENERATE_V4(), (SELECT id FROM "user" WHERE mail = 'john.doe@example.com'), 'LIKE', TRUE, 5, 'Great news!', (SELECT id FROM notification WHERE title = 'New Project Assigned'));
