@@ -36,6 +36,7 @@ public class FileService {
   public void StartUploadFile(String entityId) {
     HavePicture havePicture = findById(entityId);
     havePicture.setPictureIsImplemented(true);
+    havePicture.setImageKey(getKey(entityId));
     havePictureService.save(havePicture);
   }
 

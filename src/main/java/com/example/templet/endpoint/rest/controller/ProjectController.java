@@ -15,7 +15,6 @@ import com.example.templet.service.ProjectService;
 import com.example.templet.service.UserAuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Objects;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -84,9 +83,7 @@ public class ProjectController {
         projectService.crupdateProject(
             mapper.toDomain(
                 toUpdate,
-                Objects.requireNonNull(toUpdate.getSessions()).stream()
-                    .map(projectSessionMapper::toDomain)
-                    .toList()),
+                toUpdate.getSessions().stream().map(projectSessionMapper::toDomain).toList()),
             id);
     return mapper.toRest(
         project, project.getSessions().stream().map(projectSessionMapper::toRest).toList());

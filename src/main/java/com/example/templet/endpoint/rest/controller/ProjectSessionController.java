@@ -37,7 +37,7 @@ public class ProjectSessionController {
   private final ProjectSessionMapper mapper;
   private final ReactionMapper reactionMapper;
 
-  @GetMapping(value = "/projects/*/project-sessions")
+  @GetMapping(value = "/projects/*/projectSessions")
   public List<ProjectSession> getProjectSessions(
       @RequestParam(required = false, value = "is_suggest") Boolean isSuggest,
       @RequestParam(required = false, defaultValue = "1") Integer page,
@@ -55,7 +55,7 @@ public class ProjectSessionController {
         .toList();
   }
 
-  @GetMapping(value = "/users/{uid}/project-sessions")
+  @GetMapping(value = "/users/{uid}/projectSessions")
   public List<ProjectSession> getUsersProjectSessions(
       @PathVariable(name = "uid") String userId,
       @RequestParam(required = false, defaultValue = "1") Integer page,
@@ -70,25 +70,25 @@ public class ProjectSessionController {
         .toList();
   }
 
-  @GetMapping(value = "/projects/*/project-sessions/{id}")
+  @GetMapping(value = "/projects/*/projectSessions/{id}")
   public ProjectSession getProjectSessionById(@PathVariable String id) {
     return mapper.toRest(projectSessionService.findById(id));
   }
 
-  @PutMapping(value = "/projects/*/project-sessions/{id}")
+  @PutMapping(value = "/projects/*/projectSessions/{id}")
   public ProjectSession crupdateProjectSession(
       @PathVariable(name = "id") String id, @RequestBody ProjectSession toUpdate) {
     return mapper.toRest(
         projectSessionService.crupdateProjectSession(mapper.toDomain(toUpdate), id));
   }
 
-  @DeleteMapping(value = "/projects/*/project-sessions/{id}")
+  @DeleteMapping(value = "/projects/*/projectSessions/{id}")
   public ProjectSession deleteProjectSession(
       @PathVariable(name = "id") String id, @RequestBody ProjectSession toUpdate) {
     return null;
   }
 
-  @PutMapping(value = "users/{uid}/projects/*/project-sessions/{xid}/react")
+  @PutMapping(value = "users/{uid}/projects/*/projectSessions/{xid}/react")
   public Reaction crupdateReactProjectSession(
       @PathVariable(name = "uid") String uid,
       @PathVariable(name = "xid") String xid,

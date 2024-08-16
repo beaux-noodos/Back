@@ -1,7 +1,7 @@
 package com.example.templet.repository.model;
 
 import com.example.templet.model.enums.ProjectStatus;
-import com.example.templet.template.chat.IsInChat;
+import com.example.templet.template.chat.DBChat.IsInChat;
 import com.example.templet.template.file.HavePicture;
 import com.example.templet.template.sucgestIAWithReaction.HaveReaction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -88,6 +88,7 @@ public class Project extends HaveReaction implements Serializable, HavePicture, 
   private boolean technicalSolutionNeed;
 
   @UpdateTimestamp private Instant endDatetime;
+
   @UpdateTimestamp private Instant startDatetime;
 
   @Override
@@ -111,15 +112,6 @@ public class Project extends HaveReaction implements Serializable, HavePicture, 
     for (ProjectCategory projectCategory : projectCategorise) {
       category += projectCategory.getName() + ",";
     }
-    int coursHeure = 0;
-    for (ProjectSession projectSession : sessions) {
-      int heurs = projectSession.getStartDatetime().compareTo(projectSession.getEndDatetime());
-      if (heurs > 0) {
-        coursHeure += heurs;
-      } else {
-        coursHeure -= heurs;
-      }
-    }
     return " projet de : "
         + this.getTitle()
         + " "
@@ -133,8 +125,8 @@ public class Project extends HaveReaction implements Serializable, HavePicture, 
         + " à propos des themes : "
         + category
         + "/"
-        + " nombres d'heure de ccours: "
-        + coursHeure
+        + " fini le ccours: "
+        + this.getStartDatetime()
         + "/"
         + (this.investor == null
             ? ""

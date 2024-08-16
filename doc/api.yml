@@ -160,7 +160,67 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  "/users/{id}/technical-solution/{tsid}/chat":
+  "/technicalSolution/{id}/prompts":
+    post:
+      tags:
+        - Chatbot
+      summary: user.
+      operationId: getAllUserPromptId
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Prompts.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Prompt"
+        "400":
+          $ref: "#/components/responses/400"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/429"
+        "500":
+          $ref: "#/components/responses/500"
+
+
+
+  "/categories":
+    post:
+      tags:
+        - category
+      summary: categories.
+      operationId: getAllCategoriesId
+      responses:
+        "201":
+          description: category.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProjectCategory"
+        "400":
+          $ref: "#/components/responses/400"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/429"
+        "500":
+          $ref: "#/components/responses/500"
+
+  "/users/{id}/technicalSolution/{tsid}/chat":
     get:
       tags:
         - Chatbot
@@ -203,7 +263,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  "/technical-solution/{tsid}/prompt":
+  "/technicalSolution/{tsid}/prompt":
     put:
       tags:
         - Chatbot
@@ -775,7 +835,7 @@ paths:
           $ref: '#/components/responses/500'
 
   ## ProjectSessioning resources
-  "/users/{id}/project-sessions":
+  "/users/{id}/projectSessions":
     get:
       tags:
         - ProjectSessioning
@@ -818,7 +878,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  "/projects/{xid}/project-sessions":
+  "/projects/{xid}/projectSessions":
     get:
       tags:
         - ProjectSessioning
@@ -866,7 +926,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  "/projects/{xid}/project-sessions/{pid}":
+  "/projects/{xid}/projectSessions/{pid}":
     get:
       tags:
         - ProjectSessioning

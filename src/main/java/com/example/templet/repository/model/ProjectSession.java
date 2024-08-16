@@ -1,6 +1,6 @@
 package com.example.templet.repository.model;
 
-import com.example.templet.template.chat.IsInChat;
+import com.example.templet.template.chat.DBChat.IsInChat;
 import com.example.templet.template.sucgestIAWithReaction.HaveReaction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
@@ -42,7 +42,6 @@ public class ProjectSession extends HaveReaction implements Serializable, IsInCh
 
   private String title;
   private String description;
-  private Instant startDatetime;
   private Instant endDatetime;
 
   @Override

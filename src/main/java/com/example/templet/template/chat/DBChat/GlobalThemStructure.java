@@ -1,4 +1,4 @@
-package com.example.templet.template.chat;
+package com.example.templet.template.chat.DBChat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
