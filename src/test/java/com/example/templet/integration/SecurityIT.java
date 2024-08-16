@@ -83,8 +83,8 @@ public class SecurityIT {
                 api.signIn(
                     new AuthenticationPayload().email("dump").password("dump")));
     assertEquals(
-        "{\"type\":\"BadRequestException\",\"message\":\"Password or email is wrong\"}",
-        exception1.getResponseBody());
+        "{\"type\":\"BadRequestException\",\"message\":\"Invalid credentials\"}",
+        exception1.getMessage());
     assertEquals(400, exception1.getCode());
 
     //    assertTrue(exception1.getMessage().contains("status\":403,\"error\":\"Forbidden"));

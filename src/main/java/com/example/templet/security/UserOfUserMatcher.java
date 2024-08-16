@@ -1,5 +1,6 @@
 package com.example.templet.security;
 
+import com.example.templet.model.exception.BadRequestException;
 import com.example.templet.repository.UserAuthRepository;
 import com.example.templet.repository.model.UserAuth;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +35,7 @@ public class UserOfUserMatcher implements RequestMatcher {
     }
     String subject =
         jwtUtils.getSubjectFromJwtToken(request.getHeader("Authorization").split(" ")[1]);
-    UserAuth user = userAuthRepository.findByUserMail(subject).orElseThrow();
+    UserAuth user = userAuthRepository.findByUserMail(subject).orElseThrow(()->new BadRequestException("Invalid credentials"));
     String userIdFromRequest = user.getUser().getId();
     if (!antMatcher.matches(request)) {
       return false;
