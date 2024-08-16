@@ -1,17 +1,17 @@
 package com.example.templet.endpoint.rest.controller;
 
-import com.example.templet.endpoint.mapper.CourseSessionMapper;
+import com.example.templet.endpoint.mapper.ProjectSessionMapper;
 import com.example.templet.endpoint.mapper.ReactionMapper;
-import com.example.templet.endpoint.rest.model.CourseSession;
+import com.example.templet.endpoint.rest.model.ProjectSession;
 import com.example.templet.endpoint.rest.model.Reaction;
 import com.example.templet.model.BoundedPageSize;
 import com.example.templet.model.PageFromOne;
 import com.example.templet.model.Whoami;
-import com.example.templet.repository.model.CourseSessionReaction;
+import com.example.templet.repository.model.ProjectSessionReaction;
 import com.example.templet.security.JwtUtils;
-import com.example.templet.service.CourseService;
-import com.example.templet.service.CourseSessionReactionService;
-import com.example.templet.service.CourseSessionService;
+import com.example.templet.service.ProjectService;
+import com.example.templet.service.ProjectSessionReactionService;
+import com.example.templet.service.ProjectSessionService;
 import com.example.templet.service.UserAuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -28,17 +28,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @AllArgsConstructor
 @CrossOrigin
-public class CourseSessionController {
+public class ProjectSessionController {
   private final UserAuthService userAuthService;
   private final JwtUtils jwtUtils;
-  private final CourseService courseService;
-  private final CourseSessionService courseSessionService;
-  private final CourseSessionReactionService courseSessionReactionService;
-  private final CourseSessionMapper mapper;
+  private final ProjectService projectService;
+  private final ProjectSessionService projectSessionService;
+  private final ProjectSessionReactionService projectSessionReactionService;
+  private final ProjectSessionMapper mapper;
   private final ReactionMapper reactionMapper;
 
-  @GetMapping(value = "/courses/*/course-sessions")
-  public List<CourseSession> getCourseSessions(
+  @GetMapping(value = "/projects/*/project-sessions")
+  public List<ProjectSession> getProjectSessions(
       @RequestParam(required = false, value = "is_suggest") Boolean isSuggest,
       @RequestParam(required = false, defaultValue = "1") Integer page,
       @RequestParam(value = "page_size", required = false, defaultValue = "10") Integer pageSize,
@@ -48,59 +48,60 @@ public class CourseSessionController {
     if (isSuggest != null && isSuggest) {
       String token = jwtUtils.parseJwt(request.getHeader("Authorization"));
       Whoami whoami = userAuthService.whoami(token);
-      return courseSessionService.findAll().stream().map(mapper::toRest).toList();
+      return projectSessionService.findAll().stream().map(mapper::toRest).toList();
     }
-    return courseSessionService.findAll(pageFromOne, boundedPageSize).stream()
+    return projectSessionService.findAll(pageFromOne, boundedPageSize).stream()
         .map(mapper::toRest)
         .toList();
   }
 
-  @GetMapping(value = "/users/{uid}/course-sessions")
-  public List<CourseSession> getUsersCourseSessions(
+  @GetMapping(value = "/users/{uid}/project-sessions")
+  public List<ProjectSession> getUsersProjectSessions(
       @PathVariable(name = "uid") String userId,
       @RequestParam(required = false, defaultValue = "1") Integer page,
       @RequestParam(value = "page_size", required = false, defaultValue = "10") Integer pageSize,
       HttpServletRequest request) {
     PageFromOne pageFromOne = new PageFromOne(page);
     BoundedPageSize boundedPageSize = new BoundedPageSize(pageSize);
-    return courseSessionService
-        .getUsersCourseSessions(userId, pageFromOne, boundedPageSize)
+    return projectSessionService
+        .getUsersProjectSessions(userId, pageFromOne, boundedPageSize)
         .stream()
         .map(mapper::toRest)
         .toList();
   }
 
-  @GetMapping(value = "/courses/*/course-sessions/{id}")
-  public CourseSession getCourseSessionById(@PathVariable String id) {
-    return mapper.toRest(courseSessionService.findById(id));
+  @GetMapping(value = "/projects/*/project-sessions/{id}")
+  public ProjectSession getProjectSessionById(@PathVariable String id) {
+    return mapper.toRest(projectSessionService.findById(id));
   }
 
-  @PutMapping(value = "/courses/*/course-sessions/{id}")
-  public CourseSession crupdateCourseSession(
-      @PathVariable(name = "id") String id, @RequestBody CourseSession toUpdate) {
-    return mapper.toRest(courseSessionService.crupdateCourseSession(mapper.toDomain(toUpdate), id));
+  @PutMapping(value = "/projects/*/project-sessions/{id}")
+  public ProjectSession crupdateProjectSession(
+      @PathVariable(name = "id") String id, @RequestBody ProjectSession toUpdate) {
+    return mapper.toRest(
+        projectSessionService.crupdateProjectSession(mapper.toDomain(toUpdate), id));
   }
 
-  @DeleteMapping(value = "/courses/*/course-sessions/{id}")
-  public CourseSession deleteCourseSession(
-      @PathVariable(name = "id") String id, @RequestBody CourseSession toUpdate) {
+  @DeleteMapping(value = "/projects/*/project-sessions/{id}")
+  public ProjectSession deleteProjectSession(
+      @PathVariable(name = "id") String id, @RequestBody ProjectSession toUpdate) {
     return null;
   }
 
-  @PutMapping(value = "users/{uid}/courses/*/course-sessions/{xid}/react")
-  public Reaction crupdateReactCourseSession(
+  @PutMapping(value = "users/{uid}/projects/*/project-sessions/{xid}/react")
+  public Reaction crupdateReactProjectSession(
       @PathVariable(name = "uid") String uid,
       @PathVariable(name = "xid") String xid,
       @RequestBody Reaction reaction) {
-    CourseSessionReaction courseSessionReaction =
-        reactionMapper.toDomainCourseSessionReaction(reaction);
-    courseSessionReaction.setSubject(courseSessionService.findById(reaction.getSubjectId()));
+    ProjectSessionReaction projectSessionReaction =
+        reactionMapper.toDomainProjectSessionReaction(reaction);
+    projectSessionReaction.setSubject(projectSessionService.findById(reaction.getSubjectId()));
     return reactionMapper.toRestReaction(
-        courseSessionReactionService.react(uid, xid, courseSessionReaction));
+        projectSessionReactionService.react(uid, xid, projectSessionReaction));
   }
 
-  @GetMapping(value = "/courses/*courseSessions/{xid}/react")
-  public List<Reaction> getReactCourseSession(
+  @GetMapping(value = "/projects/*projectSessions/{xid}/react")
+  public List<Reaction> getReactProjectSession(
       @PathVariable(name = "xid") String xid,
       @RequestParam(required = false, value = "uid") String uid,
       @RequestParam(required = false, value = "have_like_reaction") Boolean havelikeReaction,
@@ -117,11 +118,11 @@ public class CourseSessionController {
         && havelikeReaction == null
         && haveVision == null) {
       List<com.example.templet.template.sucgestIAWithReaction.Reaction> reactions =
-          courseSessionReactionService.findAllBySubjectId(xid, pageFromOne, boundedPageSize);
+          projectSessionReactionService.findAllBySubjectId(xid, pageFromOne, boundedPageSize);
       return reactions.stream().map(reactionMapper::toRestReaction).toList();
     }
     List<com.example.templet.template.sucgestIAWithReaction.Reaction> reactions =
-        courseSessionReactionService.findAll();
+        projectSessionReactionService.findAll();
     return reactions.stream().map(reactionMapper::toRestReaction).toList();
   }
 }

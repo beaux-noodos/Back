@@ -1,8 +1,7 @@
 package com.example.templet.model.enums;
 
-public enum CourseStatus {
-  PLANNING,
-  CONFIRMED,
+public enum StatusSessionEnum {
+  NOT_STARTING,
   IN_PROGRESS,
   COMPLETED
 }

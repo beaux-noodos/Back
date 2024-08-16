@@ -1,6 +1,6 @@
 package com.example.templet.repository;
 
-import com.example.templet.repository.model.CourseReaction;
+import com.example.templet.repository.model.ProjectReaction;
 import com.example.templet.template.sucgestIAWithReaction.ReactionRepository;
 import java.util.List;
 import java.util.Optional;
@@ -11,54 +11,54 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CourseReactionRepository
-    extends JpaRepository<CourseReaction, String>, ReactionRepository<CourseReaction> {
+public interface ProjectReactionRepository
+    extends JpaRepository<ProjectReaction, String>, ReactionRepository<ProjectReaction> {
 
   @Override
-  List<CourseReaction> findAll();
+  List<ProjectReaction> findAll();
 
   @Override
-  Optional<CourseReaction> findById(String id);
+  Optional<ProjectReaction> findById(String id);
 
   @Override
-  Optional<CourseReaction> findAllByUserIdAndSubjectId(String userId, String subjectId);
+  Optional<ProjectReaction> findAllByUserIdAndSubjectId(String userId, String subjectId);
 
   @Override
-  List<CourseReaction> findAllBySubjectId(String subjectId, Pageable pageable);
+  List<ProjectReaction> findAllBySubjectId(String subjectId, Pageable pageable);
 
   @Override
-  List<CourseReaction> findAllByUserId(String userId, Pageable pageable);
+  List<ProjectReaction> findAllByUserId(String userId, Pageable pageable);
 
   @Override
-  @Query("SELECT COUNT(r) FROM CourseReaction r")
+  @Query("SELECT COUNT(r) FROM ProjectReaction r")
   long count();
 
   @Override
   @Query(
-      "SELECT COUNT(r) FROM CourseReaction r WHERE r.vision = TRUE and r.subject.id = :subject_id")
+      "SELECT COUNT(r) FROM ProjectReaction r WHERE r.vision = TRUE and r.subject.id = :subject_id")
   Long countByVisionTrue(@Param("subject_id") String subject_id);
 
   @Override
   @Query(
-      "SELECT COUNT(r) FROM CourseReaction r WHERE r.starsNumber IS NOT NULL and r.subject.id ="
+      "SELECT COUNT(r) FROM ProjectReaction r WHERE r.starsNumber IS NOT NULL and r.subject.id ="
           + " :subject_id")
   Long countByStarsNumberNotNull(@Param("subject_id") String subject_id);
 
   @Override
   @Query(
-      "SELECT COUNT(r) FROM CourseReaction r WHERE r.likeReaction = 'LIKE' and r.subject.id ="
+      "SELECT COUNT(r) FROM ProjectReaction r WHERE r.likeReaction = 'LIKE' and r.subject.id ="
           + " :subject_id")
   Long countByLikeReactionLike(@Param("subject_id") String subject_id);
 
   @Override
   @Query(
-      "SELECT COUNT(r) FROM CourseReaction r WHERE r.likeReaction = 'DISLIKE' and r.subject.id ="
+      "SELECT COUNT(r) FROM ProjectReaction r WHERE r.likeReaction = 'DISLIKE' and r.subject.id ="
           + " :subject_id")
   Long countByLikeReactionDislike(@Param("subject_id") String subject_id);
 
   @Override
   @Query(
-      "SELECT AVG(r.starsNumber) FROM CourseReaction r WHERE r.starsNumber IS NOT NULL and"
+      "SELECT AVG(r.starsNumber) FROM ProjectReaction r WHERE r.starsNumber IS NOT NULL and"
           + " r.subject.id = :subject_id")
   Double averageStarsNumber(@Param("subject_id") String subject_id);
 }

@@ -1,23 +1,23 @@
 package com.example.templet.service;
 
 import com.example.templet.model.validator.ReactionValidator;
-import com.example.templet.repository.LocationReactionRepository;
 import com.example.templet.repository.LocationRepository;
 import com.example.templet.repository.ProjectRepository;
+import com.example.templet.repository.ProjectSessionReactionRepository;
 import com.example.templet.repository.ProjectSessionRepository;
 import com.example.templet.repository.dao.ReactionDao;
-import com.example.templet.repository.model.Location;
-import com.example.templet.repository.model.LocationReaction;
+import com.example.templet.repository.model.ProjectSession;
+import com.example.templet.repository.model.ProjectSessionReaction;
 import com.example.templet.template.sucgestIAWithReaction.ReactionService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LocationReactionService extends ReactionService {
-  public LocationReactionService(
-      LocationReactionRepository repository,
+public class ProjectSessionReactionService extends ReactionService {
+  public ProjectSessionReactionService(
+      ProjectSessionReactionRepository repository,
       ReactionValidator reactionValidator,
-      ReactionDao<LocationReaction, Location> reactionDao,
-      LocationService locationService,
+      ReactionDao<ProjectSessionReaction, ProjectSession> reactionDao,
+      ProjectSessionService projectSessionService,
       ProjectRepository projectRepository,
       ProjectSessionRepository projectSessionRepository,
       LocationRepository locationRepository) {
@@ -25,7 +25,7 @@ public class LocationReactionService extends ReactionService {
         repository,
         reactionValidator,
         reactionDao,
-        locationService,
+        projectSessionService,
         projectRepository,
         projectSessionRepository,
         locationRepository);

@@ -68,9 +68,11 @@ public class SecurityConfig {
                     // --- --- GET --- ---
                     .requestMatchers(GET, "/users/*/chat")
                     .authenticated()
-                    .requestMatchers(GET, "users/*/interested/courses") // todo: fini
+                        .requestMatchers(GET, "/users/*/technical-solution/*/chat")
+                        .authenticated()
+                    .requestMatchers(GET, "users/*/solve/projects") // todo: fini
                     .authenticated()
-                    .requestMatchers(GET, "users/*/subscribe/courses") // todo: fini
+                    .requestMatchers(GET, "users/*/invested/projects") // todo: fini
                     .authenticated()
                     .requestMatchers(GET, "users/*/notification") // todo: endpoint
                     .authenticated()
@@ -81,20 +83,20 @@ public class SecurityConfig {
                             userAuthRepository,
                             jwtUtils,
                             GET,
-                            "/users/*/course-sessions",
+                            "/users/*/project-sessions",
                             List.of(Role.MANAGER.name())))
                     .authenticated()
-                    .requestMatchers(GET, "/courses")
+                    .requestMatchers(GET, "/projects")
                     .permitAll()
-                    .requestMatchers(GET, "/courses/*")
+                    .requestMatchers(GET, "/projects/*")
                     .authenticated()
-                    .requestMatchers(GET, "/courses/*/react")
+                    .requestMatchers(GET, "/projects/*/react")
                     .authenticated()
-                    .requestMatchers(GET, "/courses/*/course-sessions")
+                    .requestMatchers(GET, "/projects/*/project-sessions")
                     .permitAll()
-                    .requestMatchers(GET, "/courses/*/course-sessions/*")
+                    .requestMatchers(GET, "/projects/*/project-sessions/*")
                     .authenticated()
-                    .requestMatchers(GET, "/courses/*/course-sessions/*/react")
+                    .requestMatchers(GET, "/projects/*/project-sessions/*/react")
                     .authenticated()
                     .requestMatchers(GET, "/locations")
                     .permitAll()
@@ -104,8 +106,10 @@ public class SecurityConfig {
                     .authenticated()
 
                     // --- --- PUT --- ---
-                    .requestMatchers(PUT, "/users/*/courses/*/course-sessions/*/react")
+                    .requestMatchers(PUT, "/users/*/projects/*/project-sessions/*/react")
                     .authenticated()
+                        .requestMatchers(PUT, "/technical-solution/*/chat")
+                        .authenticated()
                     .requestMatchers(
                         new UserOfUserMatcher(
                             userAuthRepository,
@@ -123,24 +127,24 @@ public class SecurityConfig {
                             userAuthRepository,
                             jwtUtils,
                             PUT,
-                            "/users/*/courses/*/follow/*",
+                            "/users/*/projects/*/follow/*",
                             List.of(Role.MANAGER.name()))) // todo: fini
                     .authenticated()
-                    .requestMatchers(PUT, "users/*/courses/*/react")
+                    .requestMatchers(PUT, "users/*/projects/*/react")
                     .authenticated()
                     .requestMatchers(
                         new UserOfUserMatcher(
                             userAuthRepository,
                             jwtUtils,
                             PUT,
-                            "/courses/*/pictures",
+                            "/projects/*/pictures",
                             List.of(Role.MANAGER.name()))) // todo: fini
                     .authenticated()
-                    .requestMatchers(PUT, "/courses/*/course-sessions/*")
+                    .requestMatchers(PUT, "/projects/*/project-sessions/*")
                     .authenticated()
                     .requestMatchers(PUT, "/locations/*")
                     .authenticated()
-                    .requestMatchers(PUT, "/courses/*")
+                    .requestMatchers(PUT, "/projects/*")
                     .authenticated()
 
                     // --- --- POST --- ---

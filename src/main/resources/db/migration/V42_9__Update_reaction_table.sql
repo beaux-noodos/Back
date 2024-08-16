@@ -9,5 +9,5 @@ $$;
 
 -- Modifier le type de la colonne like_reaction
 ALTER TABLE location_reaction ALTER COLUMN like_reaction TYPE reaction_type USING like_reaction::reaction_type;
-ALTER TABLE course_session_reaction ALTER COLUMN like_reaction TYPE reaction_type USING like_reaction::reaction_type;
-ALTER TABLE course_reaction ALTER COLUMN like_reaction TYPE reaction_type USING like_reaction::reaction_type;
+ALTER TABLE project_session_reaction ALTER COLUMN like_reaction TYPE reaction_type USING like_reaction::reaction_type;
+ALTER TABLE project_reaction ALTER COLUMN like_reaction TYPE reaction_type USING like_reaction::reaction_type;

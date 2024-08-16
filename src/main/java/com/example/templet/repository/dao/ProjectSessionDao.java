@@ -1,7 +1,7 @@
 package com.example.templet.repository.dao;
 
-import com.example.templet.repository.model.Course;
-import com.example.templet.repository.model.CourseSession;
+import com.example.templet.repository.model.Project;
+import com.example.templet.repository.model.ProjectSession;
 import com.example.templet.repository.model.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -18,16 +18,17 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @AllArgsConstructor
-public class CourseSessionDao {
+public class ProjectSessionDao {
   private EntityManager entityManager;
 
-  public List<CourseSession> getUsersCourseSessions(String userId, Pageable pageable) {
+  public List<ProjectSession> getUsersProjectSessions(String userId, Pageable pageable) {
     CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-    CriteriaQuery<CourseSession> query = builder.createQuery(CourseSession.class);
-    Root<CourseSession> root = query.from(CourseSession.class);
-    Join<CourseSession, Course> courseSessionCourseJoin = root.join("course", JoinType.LEFT);
-    Join<Course, User> courseUserJoin = courseSessionCourseJoin.join("followers", JoinType.LEFT);
-    Predicate predicate = builder.equal(courseUserJoin.get("id"), userId);
+    CriteriaQuery<ProjectSession> query = builder.createQuery(ProjectSession.class);
+    Root<ProjectSession> root = query.from(ProjectSession.class);
+    Join<ProjectSession, Project> projectSessionProjectJoin = root.join("project", JoinType.LEFT);
+    Join<Project, User> projectUserJoin =
+        projectSessionProjectJoin.join("followers", JoinType.LEFT);
+    Predicate predicate = builder.equal(projectUserJoin.get("id"), userId);
 
     query
         .distinct(true)

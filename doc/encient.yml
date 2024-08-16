@@ -336,13 +336,13 @@
 #        '500':
 #          $ref: '#/components/responses/500'
 #
-#  ## Courseing resources
-#  "/courses":
+#  ## Projecting resources
+#  "/projects":
 #    get:
 #      tags:
-#        - Courseing
-#      summary: Get all courses.
-#      operationId: getCourses
+#        - Projecting
+#      summary: Get all projects.
+#      operationId: getProjects
 #      parameters:
 #        - name: page
 #          in: query
@@ -361,13 +361,13 @@
 #            type: boolean
 #      responses:
 #        "200":
-#          description: List of courses that meet the criteria.
+#          description: List of projects that meet the criteria.
 #          content:
 #            application/json:
 #              schema:
 #                type: array
 #                items:
-#                  $ref: "#/components/schemas/Course"
+#                  $ref: "#/components/schemas/Project"
 #        "400":
 #          $ref: "#/components/responses/400"
 #        "403":
@@ -379,12 +379,12 @@
 #        "500":
 #          $ref: "#/components/responses/500"
 #
-#  "/courses/{pid}":
+#  "/projects/{pid}":
 #    get:
 #      tags:
-#        - Courseing
-#      summary: Get course by identifier.
-#      operationId: getCourseById
+#        - Projecting
+#      summary: Get project by identifier.
+#      operationId: getProjectById
 #      parameters:
 #        - name: pid
 #          in: path
@@ -393,11 +393,11 @@
 #            type: string
 #      responses:
 #        "200":
-#          description: The identified course.
+#          description: The identified project.
 #          content:
 #            application/json:
 #              schema:
-#                $ref: "#/components/schemas/Course"
+#                $ref: "#/components/schemas/Project"
 #        "400":
 #          $ref: "#/components/responses/400"
 #        "403":
@@ -410,9 +410,9 @@
 #          $ref: "#/components/responses/500"
 #    put:
 #      tags:
-#        - Courseing
-#      summary: Crupdate course by identifier.
-#      operationId: crupdateCourseById
+#        - Projecting
+#      summary: Crupdate project by identifier.
+#      operationId: crupdateProjectById
 #      parameters:
 #        - name: pid
 #          in: path
@@ -420,19 +420,19 @@
 #          schema:
 #            type: string
 #      requestBody:
-#        description: Course to crupdate
+#        description: Project to crupdate
 #        required: true
 #        content:
 #          application/json:
 #            schema:
-#              $ref: "#/components/schemas/Course"
+#              $ref: "#/components/schemas/Project"
 #      responses:
 #        "201":
-#          description: The crupdated course.
+#          description: The crupdated project.
 #          content:
 #            application/json:
 #              schema:
-#                $ref: "#/components/schemas/Course"
+#                $ref: "#/components/schemas/Project"
 #        "400":
 #          $ref: "#/components/responses/400"
 #        "403":
@@ -445,9 +445,9 @@
 #          $ref: "#/components/responses/500"
 #    delete:
 #      tags:
-#        - Courseing
-#      summary: Delete course by identifier.
-#      operationId: deleteCourseById
+#        - Projecting
+#      summary: Delete project by identifier.
+#      operationId: deleteProjectById
 #      parameters:
 #        - name: pid
 #          in: path
@@ -456,11 +456,11 @@
 #            type: string
 #      responses:
 #        "200":
-#          description: The deleted course.
+#          description: The deleted project.
 #          content:
 #            application/json:
 #              schema:
-#                $ref: "#/components/schemas/Course"
+#                $ref: "#/components/schemas/Project"
 #        "400":
 #          $ref: "#/components/responses/400"
 #        "403":
@@ -472,12 +472,12 @@
 #        "500":
 #          $ref: "#/components/responses/500"
 #
-#  "/users/{uid}/courses/{xid}/react":
+#  "/users/{uid}/projects/{xid}/react":
 #    put:
 #      tags:
-#        - Courseing
-#      summary: Reacte an courses.
-#      operationId: crupdateReactionCourses
+#        - Projecting
+#      summary: Reacte an projects.
+#      operationId: crupdateReactionProjects
 #      parameters:
 #        - name: uid
 #          in: path
@@ -503,7 +503,7 @@
 #              $ref: "#/components/schemas/Reaction"
 #      responses:
 #        "200":
-#          description: List of courses that meet the criteria.
+#          description: List of projects that meet the criteria.
 #          content:
 #            application/json:
 #              schema:
@@ -519,12 +519,12 @@
 #        "500":
 #          $ref: "#/components/responses/500"
 #
-#  "/courses/{xid}/react":
+#  "/projects/{xid}/react":
 #    get:
 #      tags:
-#        - Courseing
-#      summary: Get all ReactionCourses.
-#      operationId: getReactionCourses
+#        - Projecting
+#      summary: Get all ReactionProjects.
+#      operationId: getReactionProjects
 #      parameters:
 #        - name: xid
 #          in: path
@@ -568,7 +568,7 @@
 #            $ref: "#/components/schemas/PageSize"
 #      responses:
 #        "200":
-#          description: List of courses that meet the criteria.
+#          description: List of projects that meet the criteria.
 #          content:
 #            application/json:
 #              schema:
@@ -1091,13 +1091,13 @@
 #          $ref: "#/components/responses/500"
 #
 #
-#  ## CourseSessioning resources
-#  "/course-sessions":
+#  ## ProjectSessioning resources
+#  "/project-sessions":
 #    get:
 #      tags:
-#        - CourseSessioning
-#      summary: Get all courseSessions.
-#      operationId: getCourseSessions
+#        - ProjectSessioning
+#      summary: Get all projectSessions.
+#      operationId: getProjectSessions
 #      parameters:
 #        - name: page
 #          in: query
@@ -1112,7 +1112,7 @@
 #        - name: categories
 #          in: query
 #          required: false
-#          description: courseSession
+#          description: projectSession
 #          schema:
 #            type: string
 #        - name: isSuggest
@@ -1122,13 +1122,13 @@
 #            type: boolean
 #      responses:
 #        "200":
-#          description: List of courseSessions that meet the criteria.
+#          description: List of projectSessions that meet the criteria.
 #          content:
 #            application/json:
 #              schema:
 #                type: array
 #                items:
-#                  $ref: "#/components/schemas/CourseSession"
+#                  $ref: "#/components/schemas/ProjectSession"
 #        "400":
 #          $ref: "#/components/responses/400"
 #        "403":
@@ -1140,12 +1140,12 @@
 #        "500":
 #          $ref: "#/components/responses/500"
 #
-#  "/course-sessions/{pid}":
+#  "/project-sessions/{pid}":
 #    get:
 #      tags:
-#        - CourseSessioning
-#      summary: Get courseSession by identifier.
-#      operationId: getCourseSessionById
+#        - ProjectSessioning
+#      summary: Get projectSession by identifier.
+#      operationId: getProjectSessionById
 #      parameters:
 #        - name: pid
 #          in: path
@@ -1154,11 +1154,11 @@
 #            type: string
 #      responses:
 #        "200":
-#          description: The identified courseSession.
+#          description: The identified projectSession.
 #          content:
 #            application/json:
 #              schema:
-#                $ref: "#/components/schemas/CourseSession"
+#                $ref: "#/components/schemas/ProjectSession"
 #        "400":
 #          $ref: "#/components/responses/400"
 #        "403":
@@ -1171,9 +1171,9 @@
 #          $ref: "#/components/responses/500"
 #    put:
 #      tags:
-#        - CourseSessioning
-#      summary: Crupdate courseSession by identifier.
-#      operationId: crupdateCourseSessionById
+#        - ProjectSessioning
+#      summary: Crupdate projectSession by identifier.
+#      operationId: crupdateProjectSessionById
 #      parameters:
 #        - name: pid
 #          in: path
@@ -1181,19 +1181,19 @@
 #          schema:
 #            type: string
 #      requestBody:
-#        description: CourseSession to crupdate
+#        description: ProjectSession to crupdate
 #        required: true
 #        content:
 #          application/json:
 #            schema:
-#              $ref: "#/components/schemas/CourseSession"
+#              $ref: "#/components/schemas/ProjectSession"
 #      responses:
 #        "201":
-#          description: The crupdated courseSession.
+#          description: The crupdated projectSession.
 #          content:
 #            application/json:
 #              schema:
-#                $ref: "#/components/schemas/CourseSession"
+#                $ref: "#/components/schemas/ProjectSession"
 #        "400":
 #          $ref: "#/components/responses/400"
 #        "403":
@@ -1206,9 +1206,9 @@
 #          $ref: "#/components/responses/500"
 #    delete:
 #      tags:
-#        - CourseSessioning
-#      summary: Delete courseSession by identifier.
-#      operationId: deleteCourseSessionById
+#        - ProjectSessioning
+#      summary: Delete projectSession by identifier.
+#      operationId: deleteProjectSessionById
 #      parameters:
 #        - name: pid
 #          in: path
@@ -1217,11 +1217,11 @@
 #            type: string
 #      responses:
 #        "200":
-#          description: The deleted courseSession.
+#          description: The deleted projectSession.
 #          content:
 #            application/json:
 #              schema:
-#                $ref: "#/components/schemas/CourseSession"
+#                $ref: "#/components/schemas/ProjectSession"
 #        "400":
 #          $ref: "#/components/responses/400"
 #        "403":
@@ -1234,26 +1234,26 @@
 #          $ref: "#/components/responses/500"
 #
 #
-#  "/Users/{id}/courseSession/{courseSession_id}/pdf":
+#  "/Users/{id}/projectSession/{projectSession_id}/pdf":
 #    get:
 #      tags:
-#        - CourseSessioning
-#      summary: Get pdf of a specific courseSession.
-#      operationId: getCourseSessionPdf
+#        - ProjectSessioning
+#      summary: Get pdf of a specific projectSession.
+#      operationId: getProjectSessionPdf
 #      parameters:
 #        - name: id
 #          in: path
 #          required: true
 #          schema:
 #            type: string
-#        - name: courseSession_id
+#        - name: projectSession_id
 #          in: path
 #          required: true
 #          schema:
 #            type: string
 #      responses:
 #        '200':
-#          description: CourseSession Pdf
+#          description: ProjectSession Pdf
 #          content:
 #            application/pdf:
 #              schema:
@@ -1272,12 +1272,12 @@
 #        '500':
 #          $ref: '#/components/responses/500'
 #
-#  "/users/{uid}/course-sessions/{xid}/react":
+#  "/users/{uid}/project-sessions/{xid}/react":
 #    put:
 #      tags:
-#        - CourseSessioning
-#      summary: Reacte an courseSessions.
-#      operationId: crupdateReactionCourseSessions
+#        - ProjectSessioning
+#      summary: Reacte an projectSessions.
+#      operationId: crupdateReactionProjectSessions
 #      parameters:
 #        - name: uid
 #          in: path
@@ -1303,7 +1303,7 @@
 #              $ref: "#/components/schemas/Reaction"
 #      responses:
 #        "200":
-#          description: List of courseSessions that meet the criteria.
+#          description: List of projectSessions that meet the criteria.
 #          content:
 #            apeyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0K3Zhbm9AaGVpLnNjaG9vbCIsImlhdCI6MTcyMjg5NTY3MCwiZXhwIjoxNzIzNDk1NjcwfQ.va9FHIb7juP5Qzg9PfvxHc4cvvEWKsmDQN9QexBT30Mplication/json:
 #              schema:
@@ -1318,12 +1318,12 @@
 #          $ref: "#/components/responses/429"
 #        "500":
 #          $ref: "#/components/responses/500"
-#  "/course-sessions/{xid}/react":
+#  "/project-sessions/{xid}/react":
 #    get:
 #      tags:
-#        - CourseSessioning
-#      summary: Get all ReactionCourseSessions.
-#      operationId: getReactionCourseSessions
+#        - ProjectSessioning
+#      summary: Get all ReactionProjectSessions.
+#      operationId: getReactionProjectSessions
 #      parameters:
 #        - name: xid
 #          in: path
@@ -1367,7 +1367,7 @@
 #            $ref: "#/components/schemas/PageSize"
 #      responses:
 #        "200":
-#          description: List of courseSessions that meet the criteria.
+#          description: List of projectSessions that meet the criteria.
 #          content:
 #            application/json:
 #              schema:
@@ -1705,7 +1705,7 @@
 #
 #        ## resource model
 #
-#    Course:
+#    Project:
 #      properties:
 #        id:
 #          type: string
@@ -1745,7 +1745,7 @@
 #        user:
 #          $ref: "#/components/schemas/User"
 #
-#    CourseSession:
+#    ProjectSession:
 #      properties:
 #        id:
 #          type: string
@@ -1755,8 +1755,8 @@
 #        updated_at:
 #          type: string
 #          format: date-time
-#        course:
-#          $ref: "#/components/schemas/Course"
+#        project:
+#          $ref: "#/components/schemas/Project"
 #        location:
 #          $ref: "#/components/schemas/Location"
 #

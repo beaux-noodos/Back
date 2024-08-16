@@ -24,26 +24,21 @@ import org.hibernate.annotations.UpdateTimestamp;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "\"course_session\"")
-public class CourseSession extends HaveReaction implements Serializable, IsInChat {
+@Table(name = "\"project_session\"")
+public class ProjectSession extends HaveReaction implements Serializable, IsInChat {
   @Id private String id;
   @CreationTimestamp private Instant creationDatetime = Instant.now();
   @UpdateTimestamp private Instant lastUpdateDatetime;
 
   @ManyToOne
-  @JoinColumn(name = "course_id")
+  @JoinColumn(name = "project_id")
   @JsonIgnore
-  private Course course;
+  private Project project;
 
   @ManyToOne
   @JoinColumn(name = "location_id")
   @JsonIgnore
   private Location location;
-
-  @ManyToOne
-  @JoinColumn(name = "professor_id")
-  @JsonIgnore
-  private User professor;
 
   private String title;
   private String description;

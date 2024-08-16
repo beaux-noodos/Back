@@ -5,13 +5,13 @@ import com.example.templet.model.PageFromOne;
 import com.example.templet.model.exception.BadRequestException;
 import com.example.templet.model.exception.NotFoundException;
 import com.example.templet.model.validator.ReactionValidator;
-import com.example.templet.repository.CourseRepository;
-import com.example.templet.repository.CourseSessionRepository;
 import com.example.templet.repository.LocationRepository;
+import com.example.templet.repository.ProjectRepository;
+import com.example.templet.repository.ProjectSessionRepository;
 import com.example.templet.repository.dao.ReactionDao;
-import com.example.templet.repository.model.Course;
-import com.example.templet.repository.model.CourseSession;
 import com.example.templet.repository.model.Location;
+import com.example.templet.repository.model.Project;
+import com.example.templet.repository.model.ProjectSession;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +26,8 @@ public class ReactionService {
   private final ReactionValidator reactionValidator;
   private final ReactionDao reactionDao;
   private final HaveReactionService reactionRepository;
-  private final CourseRepository courseRepository;
-  private final CourseSessionRepository courseSessionRepository;
+  private final ProjectRepository projectRepository;
+  private final ProjectSessionRepository projectSessionRepository;
   private final LocationRepository locationRepository;
 
   long updateLikeNumber(Long reaction, String haveReactionId, Boolean isNew) {
@@ -93,14 +93,14 @@ public class ReactionService {
       haveReaction.setStarNumber(haveReaction.getStarNumber() + 1);
     }
 
-    if (haveReaction.getClass().equals(Course.class)) {
-      Course course = (Course) haveReaction;
+    if (haveReaction.getClass().equals(Project.class)) {
+      Project project = (Project) haveReaction;
 
-      courseRepository.save(course);
+      projectRepository.save(project);
 
-    } else if (haveReaction.getClass().equals(CourseSession.class)) {
-      courseSessionRepository.save((CourseSession) haveReaction);
-      courseSessionRepository.save((CourseSession) haveReaction);
+    } else if (haveReaction.getClass().equals(ProjectSession.class)) {
+      projectSessionRepository.save((ProjectSession) haveReaction);
+      projectSessionRepository.save((ProjectSession) haveReaction);
 
     } else if (haveReaction.getClass().equals(Location.class)) {
       locationRepository.save((Location) haveReaction);

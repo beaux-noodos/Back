@@ -1,6 +1,5 @@
 package com.example.templet.endpoint.mapper;
 
-import static com.example.templet.service.utils.EnumMapperUtils.mapEnum;
 
 import com.example.templet.constant.FileConstant;
 import com.example.templet.endpoint.rest.model.Role;
@@ -8,9 +7,9 @@ import com.example.templet.endpoint.rest.model.Sex;
 import com.example.templet.endpoint.rest.model.SignUp;
 import com.example.templet.endpoint.rest.model.User;
 import com.example.templet.endpoint.rest.model.UserStatus;
+import com.example.templet.service.utils.EnumMapperUtils;
 import com.example.templet.template.file.S3Service;
 import java.time.Instant;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -75,70 +74,26 @@ public class UserMapper {
   }
 
   public static Sex convertToRest(com.example.templet.model.enums.Sex sex) {
-    if (sex == null) {
-      return null;
-    }
-    return mapEnum(
-        sex,
-        Map.of(
-            com.example.templet.model.enums.Sex.M, Sex.M,
-            com.example.templet.model.enums.Sex.F, Sex.F,
-            com.example.templet.model.enums.Sex.OTHER, Sex.OTHER));
+    return EnumMapperUtils.mapEnum(Sex.class, sex);
   }
 
   public static UserStatus convertToRest(com.example.templet.model.enums.UserStatus userStatus) {
-    if (userStatus == null) {
-      return null;
-    }
-    return mapEnum(
-        userStatus,
-        Map.of(
-            com.example.templet.model.enums.UserStatus.ENABLED, UserStatus.ENABLED,
-            com.example.templet.model.enums.UserStatus.BANISHED, UserStatus.BANISHED));
+    return EnumMapperUtils.mapEnum(UserStatus.class, userStatus);
   }
 
   public static Role convertToRest(com.example.templet.model.enums.Role role) {
-    if (role == null) {
-      return Role.CLIENT;
-    }
-    return mapEnum(
-        role,
-        Map.of(
-            com.example.templet.model.enums.Role.CLIENT, Role.CLIENT,
-            com.example.templet.model.enums.Role.MANAGER, Role.MANAGER));
+    return EnumMapperUtils.mapEnum(Role.class, role);
   }
 
   public static com.example.templet.model.enums.Sex toDomain(Sex sex) {
-    if (sex == null) {
-      return null;
-    }
-    return mapEnum(
-        sex,
-        Map.of(
-            Sex.M, com.example.templet.model.enums.Sex.M,
-            Sex.F, com.example.templet.model.enums.Sex.F,
-            Sex.OTHER, com.example.templet.model.enums.Sex.OTHER));
+    return EnumMapperUtils.mapEnum(com.example.templet.model.enums.Sex.class, sex);
   }
 
   public static com.example.templet.model.enums.Role toDomain(Role role) {
-    if (role == null) {
-      return com.example.templet.model.enums.Role.CLIENT;
-    }
-    return mapEnum(
-        role,
-        Map.of(
-            Role.CLIENT, com.example.templet.model.enums.Role.CLIENT,
-            Role.MANAGER, com.example.templet.model.enums.Role.MANAGER));
+    return EnumMapperUtils.mapEnum(com.example.templet.model.enums.Role.class, role);
   }
 
   public static com.example.templet.model.enums.UserStatus toDomain(UserStatus userStatus) {
-    if (userStatus == null) {
-      return com.example.templet.model.enums.UserStatus.ENABLED;
-    }
-    return mapEnum(
-        userStatus,
-        Map.of(
-            UserStatus.ENABLED, com.example.templet.model.enums.UserStatus.ENABLED,
-            UserStatus.BANISHED, com.example.templet.model.enums.UserStatus.BANISHED));
+    return EnumMapperUtils.mapEnum(com.example.templet.model.enums.UserStatus.class, userStatus);
   }
 }

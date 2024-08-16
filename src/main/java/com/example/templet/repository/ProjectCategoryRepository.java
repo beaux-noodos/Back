@@ -1,6 +1,6 @@
 package com.example.templet.repository;
 
-import com.example.templet.repository.model.CourseCategory;
+import com.example.templet.repository.model.ProjectCategory;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
@@ -9,13 +9,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CourseCategoryRepository extends JpaRepository<CourseCategory, String> {
+public interface ProjectCategoryRepository extends JpaRepository<ProjectCategory, String> {
   @Override
-  List<CourseCategory> findAll();
+  List<ProjectCategory> findAll();
 
-  @Query("SELECT x FROM Course x ")
-  List<CourseCategory> findAllWithPage(Pageable pageable);
+  @Query("SELECT x FROM Project x ")
+  List<ProjectCategory> findAllWithPage(Pageable pageable);
 
   @Override
-  Optional<CourseCategory> findById(String id);
+  Optional<ProjectCategory> findById(String id);
 }

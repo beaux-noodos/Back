@@ -1,6 +1,6 @@
 package com.example.templet.repository;
 
-import com.example.templet.repository.model.CourseReaction;
+import com.example.templet.repository.model.ProjectReaction;
 import com.example.templet.template.sucgestIAWithReaction.Reaction;
 import java.util.List;
 import java.util.Optional;
@@ -16,9 +16,9 @@ public interface ReactionRepositoryData extends JpaRepository<Reaction, String> 
   @Override
   Optional<Reaction> findById(String id);
 
-  Optional<CourseReaction> findAllByUserIdAndSubjectId(String userId, String subjectId);
+  Optional<ProjectReaction> findAllByUserIdAndSubjectId(String userId, String subjectId);
 
-  List<CourseReaction> findAllBySubjectId(String subjectId, Pageable pageable);
+  List<ProjectReaction> findAllBySubjectId(String subjectId, Pageable pageable);
 
-  List<CourseReaction> findAllByUserId(String userId, Pageable pageable);
+  List<ProjectReaction> findAllByUserId(String userId, Pageable pageable);
 }

@@ -4,7 +4,7 @@ do
 $$
 begin
         if not exists(select from pg_type where typname = 'role') then
-create type "role" as enum ('CLIENT', 'MANAGER');
+create type "role" as enum ('TECHNICAL_SOLUTION', 'MANAGER', 'INVESTOR', 'PROJECT_OWNER');
 end if;
         if not exists(select from pg_type where typname = 'sex') then
 create type sex as enum ('M', 'F', 'OTHER');
