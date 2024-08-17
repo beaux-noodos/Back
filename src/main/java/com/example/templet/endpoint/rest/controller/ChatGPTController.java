@@ -34,14 +34,14 @@ public class ChatGPTController {
     return messageChatFormatService.userChat(id, prompt);
   }
 
-  // TODO: chat NEW
+  // TODO: chat NEW /users/:id/technical-solution/:tsid/chat
   @GetMapping("/users/{id}/technicalSolution/{tsid}/chat")
   public String chat(
       @PathVariable String id,
       @PathVariable String tsid,
       @RequestParam(value = "prompt", required = false) String prompt)
       throws IOException {
-    return messageChatFormatService.userChat(id, prompt);
+    return messageChatFormatService.userChat(id, tsid, prompt);
   }
 
   @GetMapping("/technicalSolution/{id}/prompts")
@@ -53,7 +53,7 @@ public class ChatGPTController {
   public com.example.templet.endpoint.rest.model.Prompt updatePrompt(
       @PathVariable("id") String userId,
       @RequestBody com.example.templet.endpoint.rest.model.Prompt prompt) {
-    Chat chat = chatRepository.findById(userId).orElse(null);
+    Chat chat = chatRepository.findByUserId(userId);
     return promptMapper.toRest(
         promptService.createOrUpdatePrompt(promptMapper.toDomain(prompt, chat)));
   }

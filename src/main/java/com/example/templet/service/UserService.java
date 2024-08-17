@@ -3,6 +3,7 @@ package com.example.templet.service;
 import com.example.templet.model.BoundedPageSize;
 import com.example.templet.model.PageFromOne;
 import com.example.templet.model.enums.ActionEnum;
+import com.example.templet.model.enums.Role;
 import com.example.templet.model.exception.BadRequestException;
 import com.example.templet.model.exception.NotFoundException;
 import com.example.templet.model.validator.UserValidator;
@@ -10,8 +11,11 @@ import com.example.templet.repository.ProjectRepository;
 import com.example.templet.repository.UserRepository;
 import com.example.templet.repository.model.Project;
 import com.example.templet.repository.model.User;
+import com.example.templet.template.chat.ChatTrine.Chat;
+import com.example.templet.template.chat.ChatTrine.ChatRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +28,7 @@ public class UserService {
   private final UserRepository repository;
   private final ProjectRepository projectRepository;
   private UserValidator userValidator;
+  private ChatRepository chatRepository;
 
   public List<User> findAllByName(String name, PageFromOne page, BoundedPageSize pageSize) {
     Pageable pageable = PageRequest.of(page.getValue() - 1, pageSize.getValue());
@@ -33,7 +38,18 @@ public class UserService {
   @Transactional
   public User save(User toSave) {
     userValidator.accept(toSave);
-    return repository.save(toSave);
+    User newUser = repository.save(toSave);
+    addChatIf(newUser);
+    return newUser;
+  }
+
+  public void addChatIf(User user) {
+    if (user.getRole().equals(Role.TECHNICAL_SOLUTION)) {
+      if (chatRepository.findByUserId(user.getId()) == null) {
+        Chat chat = Chat.builder().id(UUID.randomUUID().toString()).user(user).build();
+        chatRepository.save(chat);
+      }
+    }
   }
 
   @Transactional
@@ -46,7 +62,9 @@ public class UserService {
       user.setRole(userFromDomain.getRole());
       user.setPhotoKey(userFromDomain.getPhotoKey());
     }
-    return repository.save(user);
+    User newUser = repository.save(user);
+    addChatIf(newUser);
+    return newUser;
   }
 
   @Transactional

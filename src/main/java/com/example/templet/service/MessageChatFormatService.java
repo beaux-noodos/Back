@@ -12,6 +12,10 @@ import com.example.templet.repository.model.MessageChatFormatEntity;
 import com.example.templet.repository.model.Project;
 import com.example.templet.repository.model.User;
 import com.example.templet.template.chat.ChatService;
+import com.example.templet.template.chat.ChatTrine.Chat;
+import com.example.templet.template.chat.ChatTrine.ChatRepository;
+import com.example.templet.template.chat.ChatTrine.Prompt;
+import com.example.templet.template.chat.ChatTrine.PromptService;
 import com.example.templet.template.chat.ChatUtils;
 import com.example.templet.template.chat.DBChat.ChatTheme;
 import com.example.templet.template.chat.DBChat.GlobalThemStructure;
@@ -32,10 +36,12 @@ public class MessageChatFormatService {
   private final ProjectRepository repository;
   private final ProjectReactionRepository xxxxxReactionRepository;
   private EntityModelValidator entityModelValidator;
+  private final PromptService promptService;
 
   private final UserService userService;
   private final MessageChatFormatRepository messageChatFormatRepository;
   private final ChatService chatService;
+  private final ChatRepository chatRepository;
 
   public List<MessageChatFormatEntity> findAll() {
     return messageChatFormatRepository.findAll();
@@ -44,7 +50,15 @@ public class MessageChatFormatService {
   public List<MessageChatFormatEntity> findByUserId(
       String userId, PageFromOne page, BoundedPageSize pageSize) {
     Pageable pageable = PageRequest.of(page.getValue() - 1, pageSize.getValue());
-    return messageChatFormatRepository.findByUserIdOrderByCreationDatetimeDesc(userId, pageable);
+    return messageChatFormatRepository.findByUserIdAndChatIsEmptyOrderByCreationDatetimeDesc(
+        userId, pageable);
+  }
+
+  public List<MessageChatFormatEntity> findByUserIdAndChatId(
+      String userId, String chatId, PageFromOne page, BoundedPageSize pageSize) {
+    Pageable pageable = PageRequest.of(page.getValue() - 1, pageSize.getValue());
+    return messageChatFormatRepository.findByUserIdAndChatIdOrderByCreationDatetimeDesc(
+        userId, chatId, pageable);
   }
 
   public Optional<MessageChatFormatEntity> findById(String id) {
@@ -84,7 +98,8 @@ public class MessageChatFormatService {
     Pageable pageable = PageRequest.of(0, 10);
     User user = userService.findById(userId);
     List<MessageChatFormatEntity> messageChatFormatEntities =
-        messageChatFormatRepository.findByUserIdOrderByCreationDatetimeDesc(userId, pageable);
+        messageChatFormatRepository.findByUserIdAndChatIsEmptyOrderByCreationDatetimeDesc(
+            userId, pageable);
 
     String assistantThemeMessage =
         chatService.chat(
@@ -121,6 +136,61 @@ public class MessageChatFormatService {
             .build();
     MessageChatFormatEntity messageChatFormatEntity = mappedToEntity(newMessageChatFormat, user);
     messageChatFormatRepository.save(messageChatFormatEntity);
+    return assistantMessage;
+  }
+
+  public String userChat(String userId, String userSolutionId, String userMessage)
+      throws IOException {
+    List<Prompt> prompts = promptService.getAllPromptsByUser(userSolutionId);
+    String systemInformation =
+        "Tu prendra la place d'un entiter specialiste dans un dommain que je t'expliquerai en te"
+            + " donnant des liste d'infomation. Voici les listes d'information que tu dois prendre"
+            + " en compte pour pouvoir repondre au utilisateur : ";
+    String intormation = "";
+    int start = 1;
+    for (Prompt prompt : prompts) {
+      intormation +=
+          "\n iformatio N°"
+              + start
+              + ": - sous-titre: "
+              + prompt.getPromptCategory()
+              + " = "
+              + prompt.getBody();
+      start++;
+    }
+
+    Pageable pageable = PageRequest.of(0, 10);
+    User user = userService.findById(userId);
+    Chat chat = chatRepository.findByUserId(userSolutionId);
+    List<MessageChatFormatEntity> messageChatFormatEntities =
+        messageChatFormatRepository.findByUserIdAndChatIdOrderByCreationDatetimeDesc(
+            userId, chat.getId(), pageable);
+
+    String assistantMessage =
+        chatService.chat(
+            escapeJsonString(userMessage),
+            MessageChatFormatEntity.toString(messageChatFormatEntities, 6),
+            escapeJsonString(
+                systemInformation
+                    + intormation
+                    + ".\n"
+                    + " les information se finice ici. Maintenant, réponds aux questions des"
+                    + " clients en t'appuyant sur ces données. Si une question est totalement hors"
+                    + " sujet par rapport à ces informations, réponds poliment que tu n'as pas été"
+                    + " programmé pour y répondre. Mais si cela s'en rapproche, essaie toujours de"
+                    + " répondre."));
+
+    MessageChatFormat newMessageChatFormat =
+        MessageChatFormat.builder()
+            .clientMessage(escapeJsonString(userMessage))
+            .AssistantMessage(escapeJsonString(assistantMessage))
+            .build();
+    System.out.println(systemInformation + intormation + ChatUtils.askChat());
+    System.out.println("--------------------------------------------");
+    MessageChatFormatEntity messageChatFormatEntity = mappedToEntity(newMessageChatFormat, user);
+    messageChatFormatEntity.setChat(chat);
+    messageChatFormatRepository.save(messageChatFormatEntity);
+
     return assistantMessage;
   }
 }
