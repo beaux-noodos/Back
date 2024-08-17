@@ -11,12 +11,11 @@ import com.example.templet.repository.ProjectRepository;
 import com.example.templet.repository.UserRepository;
 import com.example.templet.repository.model.Project;
 import com.example.templet.repository.model.User;
+import com.example.templet.template.chat.ChatTrine.Chat;
+import com.example.templet.template.chat.ChatTrine.ChatRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import com.example.templet.template.chat.ChatTrine.Chat;
-import com.example.templet.template.chat.ChatTrine.ChatRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,8 +43,8 @@ public class UserService {
     return newUser;
   }
 
-  public void addChatIf(User user){
-    if (user.getRole().equals(Role.TECHNICAL_SOLUTION)){
+  public void addChatIf(User user) {
+    if (user.getRole().equals(Role.TECHNICAL_SOLUTION)) {
       if (chatRepository.findByUserId(user.getId()) == null) {
         Chat chat = Chat.builder().id(UUID.randomUUID().toString()).user(user).build();
         chatRepository.save(chat);

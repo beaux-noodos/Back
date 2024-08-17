@@ -12,7 +12,7 @@ public class PromptMapper {
         .id(rest.getId())
         .updatedAt(rest.getUpdatedAt())
         .creationDatetime(rest.getCreationDatetime())
-        .body(rest.getPromptCategory())
+        .body(rest.getBody())
         .promptCategory(rest.getPromptCategory())
         .chat(chat)
         .build();

@@ -41,7 +41,7 @@ public class ChatGPTController {
       @PathVariable String tsid,
       @RequestParam(value = "prompt", required = false) String prompt)
       throws IOException {
-    return messageChatFormatService.userChat(id, prompt);
+    return messageChatFormatService.userChat(id, tsid, prompt);
   }
 
   @GetMapping("/technicalSolution/{id}/prompts")
@@ -53,7 +53,7 @@ public class ChatGPTController {
   public com.example.templet.endpoint.rest.model.Prompt updatePrompt(
       @PathVariable("id") String userId,
       @RequestBody com.example.templet.endpoint.rest.model.Prompt prompt) {
-    Chat chat = chatRepository.findById(userId).orElse(null);
+    Chat chat = chatRepository.findByUserId(userId);
     return promptMapper.toRest(
         promptService.createOrUpdatePrompt(promptMapper.toDomain(prompt, chat)));
   }

@@ -70,7 +70,7 @@ public class SecurityConfig {
                     // --- --- GET --- ---
                     .requestMatchers(GET, "/users/*/chat")
                     .authenticated()
-                    .requestMatchers(GET, "/users/*/technical-solution/*/chat")
+                    .requestMatchers(GET, "/users/*/technicalSolution/*/chat")
                     .authenticated()
                     .requestMatchers(GET, "/technicalSolution/{id}/prompts")
                     .authenticated()
@@ -114,7 +114,7 @@ public class SecurityConfig {
                     // --- --- PUT --- ---
                     .requestMatchers(PUT, "/users/*/projects/*/projectSessions/*/react")
                     .authenticated()
-                    .requestMatchers(PUT, "/technical-solution/*/chat")
+                    .requestMatchers(PUT, "/technicalSolution/*/chat")
                     .authenticated()
                     .requestMatchers(
                         new UserOfUserMatcher(
