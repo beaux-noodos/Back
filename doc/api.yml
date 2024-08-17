@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
   version: "latest"
-  title: Prehakaton - API
+  title: BNBS Hackathon backend - API
   description: |
-    XYXYXY
+    BNBS Hackathon backend - API
 security:
   - BearerAuth: []
 
@@ -483,7 +483,7 @@ paths:
 
   "/users/{id}/invested/projects":
     get:
-      summary: "Récupérer les cours suivis par l'utilisateur"
+      summary: "Récupérer les projets suivis par l'utilisateur"
       operationId: "getUserInvestedProjects"
       tags:
         - User
@@ -496,7 +496,7 @@ paths:
           description: "ID de l'utilisateur"
       responses:
         '200':
-          description: "Liste des cours suivis"
+          description: "Liste des projets suivis"
           content:
             application/json:
               schema:
@@ -516,7 +516,7 @@ paths:
 
   "/users/{id}/solve/projects":
     get:
-      summary: "Récupérer les cours suivis par l'utilisateur"
+      summary: "Récupérer les projets suivis par l'utilisateur"
       operationId: "getUserSolveProjects"
       tags:
         - User
@@ -529,7 +529,7 @@ paths:
           description: "ID de l'utilisateur"
       responses:
         '200':
-          description: "Liste des cours suivis"
+          description: "Liste des projets suivis"
           content:
             application/json:
               schema:
@@ -584,7 +584,7 @@ paths:
   "/projects":
     get:
       tags:
-        - Projecting
+        - Project
       summary: Get all projects.
       operationId: getProjects
       parameters:
@@ -626,7 +626,7 @@ paths:
   "/projects/{pid}":
     get:
       tags:
-        - Projecting
+        - Project
       summary: Get project by identifier.
       operationId: getProjectById
       parameters:
@@ -654,7 +654,7 @@ paths:
           $ref: "#/components/responses/500"
     put:
       tags:
-        - Projecting
+        - Project
       summary: Crupdate project by identifier.
       operationId: crupdateProjectById
       parameters:
@@ -691,7 +691,7 @@ paths:
   "/users/{uid}/projects/{xid}/react":
     put:
       tags:
-        - Projecting
+        - Project
       summary: Reacte an projects.
       operationId: crupdateReactionProjects
       parameters:
@@ -733,7 +733,7 @@ paths:
   "/projects/{xid}/react":
     get:
       tags:
-        - Projecting
+        - Project
       summary: Get all ReactionProjects.
       operationId: getReactionProjects
       parameters:
@@ -800,7 +800,7 @@ paths:
   "/projects/{xid}/pictures":
     put:
       tags:
-        - Projecting
+        - Project
       summary: Submit project picture
       operationId: putProjectPicture
       parameters:
@@ -838,7 +838,7 @@ paths:
   "/users/{id}/projectSessions":
     get:
       tags:
-        - ProjectSessioning
+        - Project Session
       summary: Get all projectSessions.
       operationId: getUserProjectSessions
       parameters:
@@ -881,7 +881,7 @@ paths:
   "/projects/{xid}/projectSessions":
     get:
       tags:
-        - ProjectSessioning
+        - Project Session
       summary: Get all projectSessions.
       operationId: getProjectSessions
       parameters:
@@ -890,7 +890,7 @@ paths:
           required: true
           schema:
             type: string
-          description: "ID du cours"
+          description: "ID du projet"
         - name: page
           in: query
           required: true
@@ -929,7 +929,7 @@ paths:
   "/projects/{xid}/projectSessions/{pid}":
     get:
       tags:
-        - ProjectSessioning
+        - Project Session
       summary: Get projectSession by identifier.
       operationId: getProjectSessionById
       parameters:
@@ -938,7 +938,7 @@ paths:
           required: true
           schema:
             type: string
-          description: "ID du cours"
+          description: "ID du projet"
         - name: pid
           in: path
           required: true
@@ -963,7 +963,7 @@ paths:
           $ref: "#/components/responses/500"
     put:
       tags:
-        - ProjectSessioning
+        - Project Session
       summary: Crupdate projectSession by identifier.
       operationId: crupdateProjectSessionById
       parameters:
@@ -972,7 +972,7 @@ paths:
           required: true
           schema:
             type: string
-          description: "ID du cours"
+          description: "ID du projet"
         - name: pid
           in: path
           required: true
@@ -1007,7 +1007,7 @@ paths:
   "/locations":
     get:
       tags:
-        - Locationing
+        - Location
       summary: Get all locations.
       operationId: getLocations
       parameters:
@@ -1049,7 +1049,7 @@ paths:
   "/locations/{pid}":
     get:
       tags:
-        - Locationing
+        - Location
       summary: Get location by identifier.
       operationId: getLocationById
       parameters:
@@ -1077,7 +1077,7 @@ paths:
           $ref: "#/components/responses/500"
     put:
       tags:
-        - Locationing
+        - Location
       summary: Crupdate location by identifier.
       operationId: crupdateLocationById
       parameters:
