@@ -34,7 +34,7 @@ public class ChatGPTController {
     return messageChatFormatService.userChat(id, prompt);
   }
 
-  // TODO: chat NEW
+  // TODO: chat NEW /users/:id/technical-solution/:tsid/chat
   @GetMapping("/users/{id}/technicalSolution/{tsid}/chat")
   public String chat(
       @PathVariable String id,

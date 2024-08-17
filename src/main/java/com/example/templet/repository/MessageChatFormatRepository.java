@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MessageChatFormatRepository
     extends JpaRepository<MessageChatFormatEntity, String> {
-  List<MessageChatFormatEntity> findByUserIdOrderByCreationDatetimeDesc(
-      String userId, Pageable pageable);
+  List<MessageChatFormatEntity> findByUserIdAndChatIsEmptyOrderByCreationDatetimeDesc(String userId, Pageable pageable);
+  List<MessageChatFormatEntity> findByUserIdAndChatIdOrderByCreationDatetimeDesc(String userId, String chatId, Pageable pageable);
 }

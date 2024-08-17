@@ -3,6 +3,7 @@ package com.example.templet.repository.model;
 import static com.example.templet.service.utils.FormatString.escapeJsonString;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
+import com.example.templet.template.chat.ChatTrine.Chat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,6 +36,11 @@ public class MessageChatFormatEntity {
   User user;
 
   @CreationTimestamp private Instant creationDatetime = Instant.now();
+
+  @ManyToOne
+  @JoinColumn(name = "chat_id")
+  @JsonIgnore
+  Chat chat;
 
   String clientMessage;
   String AssistantMessage;
